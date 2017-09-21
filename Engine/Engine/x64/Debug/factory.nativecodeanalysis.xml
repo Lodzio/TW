@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+      <FILENAME>factory.cpp</FILENAME>
+      <LINE>407</LINE>
+      <COLUMN>12</COLUMN>
+    </SFA>
+    <DEFECTCODE>6011</DEFECTCODE>
+    <DESCRIPTION>Dereferencing NULL pointer 'buffor'. </DESCRIPTION>
+    <FUNCTION>FactoryClass::FireEmployee</FUNCTION>
+    <DECORATED>?FireEmployee@FactoryClass@@QEAAXPEAVEmployeeClass@@@Z</DECORATED>
+    <FUNCLINE>394</FUNCLINE>
+    <PROBABILITY>1</PROBABILITY>
+    <RANK>4</RANK>
+    <CATEGORY>
+      <RULECATEGORY>mspft</RULECATEGORY>
+    </CATEGORY>
+    <PATH>
+      <SFA>
+        <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+        <FILENAME>factory.cpp</FILENAME>
+        <LINE>396</LINE>
+        <COLUMN>14</COLUMN>
+        <KEYEVENT>
+          <ID>1</ID>
+          <KIND>declaration</KIND>
+          <IMPORTANCE>Essential</IMPORTANCE>
+          <MESSAGE>'buffor' is NULL</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+        <FILENAME>factory.cpp</FILENAME>
+        <LINE>397</LINE>
+        <COLUMN>5</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+        <FILENAME>factory.cpp</FILENAME>
+        <LINE>398</LINE>
+        <COLUMN>15</COLUMN>
+        <KEYEVENT>
+          <ID>2</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this branch, (assume 'n_workers-1' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+        <FILENAME>factory.cpp</FILENAME>
+        <LINE>400</LINE>
+        <COLUMN>10</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+        <FILENAME>factory.cpp</FILENAME>
+        <LINE>400</LINE>
+        <COLUMN>19</COLUMN>
+        <KEYEVENT>
+          <ID>3</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Enter this loop, (assume 'i&lt;n_workers')</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+        <FILENAME>factory.cpp</FILENAME>
+        <LINE>402</LINE>
+        <COLUMN>26</COLUMN>
+        <KEYEVENT>
+          <ID>4</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this branch, (assume 'input==Workers[i]||input==0' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+        <FILENAME>factory.cpp</FILENAME>
+        <LINE>407</LINE>
+        <COLUMN>12</COLUMN>
+        <KEYEVENT>
+          <ID>5</ID>
+          <KIND>usage</KIND>
+          <IMPORTANCE>Essential</IMPORTANCE>
+          <MESSAGE>'buffor' is dereferenced, but may still be NULL</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+    </PATH>
+  </DEFECT>
+</DEFECTS>

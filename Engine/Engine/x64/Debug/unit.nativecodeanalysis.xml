@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+      <FILENAME>unit.cpp</FILENAME>
+      <LINE>91</LINE>
+      <COLUMN>12</COLUMN>
+    </SFA>
+    <DEFECTCODE>6246</DEFECTCODE>
+    <DESCRIPTION>Local declaration of 'subrot' hides declaration of the same name in outer scope. For additional information, see previous declaration at line '40' of 'd:\projekty\direct2d\engine\engine\unit.cpp'.</DESCRIPTION>
+    <FUNCTION>UnitClass::CalcPosition</FUNCTION>
+    <DECORATED>?CalcPosition@UnitClass@@QEAAXH@Z</DECORATED>
+    <FUNCLINE>29</FUNCLINE>
+    <PATH>
+      <SFA>
+        <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+        <FILENAME>unit.cpp</FILENAME>
+        <LINE>40</LINE>
+        <COLUMN>16</COLUMN>
+      </SFA>
+    </PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+      <FILENAME>unit.cpp</FILENAME>
+      <LINE>111</LINE>
+      <COLUMN>12</COLUMN>
+    </SFA>
+    <DEFECTCODE>6246</DEFECTCODE>
+    <DESCRIPTION>Local declaration of 'subrot' hides declaration of the same name in outer scope. For additional information, see previous declaration at line '40' of 'd:\projekty\direct2d\engine\engine\unit.cpp'.</DESCRIPTION>
+    <FUNCTION>UnitClass::CalcPosition</FUNCTION>
+    <DECORATED>?CalcPosition@UnitClass@@QEAAXH@Z</DECORATED>
+    <FUNCLINE>29</FUNCLINE>
+    <PATH>
+      <SFA>
+        <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+        <FILENAME>unit.cpp</FILENAME>
+        <LINE>40</LINE>
+        <COLUMN>16</COLUMN>
+      </SFA>
+    </PATH>
+  </DEFECT>
+</DEFECTS>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+      <FILENAME>d2dclass.cpp</FILENAME>
+      <LINE>220</LINE>
+      <COLUMN>8</COLUMN>
+    </SFA>
+    <DEFECTCODE>6230</DEFECTCODE>
+    <DESCRIPTION>Implicit cast between semantically different integer types:  using HRESULT in a Boolean context.</DESCRIPTION>
+    <FUNCTION>D2DClass::EndScene</FUNCTION>
+    <DECORATED>?EndScene@D2DClass@@QEAAJXZ</DECORATED>
+    <FUNCLINE>217</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>d:\projekty\direct2d\engine\engine\</FILEPATH>
+      <FILENAME>d2dclass.cpp</FILENAME>
+      <LINE>220</LINE>
+      <COLUMN>31</COLUMN>
+    </SFA>
+    <DEFECTCODE>6216</DEFECTCODE>
+    <DESCRIPTION>Compiler-inserted cast between semantically different integral types:  a Boolean type to HRESULT.</DESCRIPTION>
+    <FUNCTION>D2DClass::EndScene</FUNCTION>
+    <DECORATED>?EndScene@D2DClass@@QEAAJXZ</DECORATED>
+    <FUNCLINE>217</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>
