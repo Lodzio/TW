@@ -1,61 +1,40 @@
 #include "Pathfinding.h"
 
-void PFindingclass::AddVertex(D2D1_POINT_2F input)
+void PFindingclass::AddGeom(geometries input)
 {
-	if (n_vertexes + 1 > multiplies_n_vex * 256)
+	geometries* subarray = new geometries[n_geom + 1];
+	for (int i = 0; i < n_vertexes; i++)
 	{
-		D2D1_POINT_2F* subarray = new D2D1_POINT_2F[(multiplies_n_vex + 1) * 256];
-		for (int i = 0; i < n_vertexes; i++)
-		{
-			subarray[i] = vertexes[i];
-		}
-		multiplies_n_vex++;
-		delete[] vertexes;
-		vertexes = subarray;
+		subarray[i] = geom[i];
 	}
-	vertexes[n_vertexes] = input;
-	n_vertexes++;
+	n_geom++;
+	delete[] geom;
+	geom = subarray;
+	geom[n_geom] = input;
+	n_geom++;
 }
 
-void PFindingclass::DeleteVertex(int index)
+void PFindingclass::DeleteGeom(int index)
 {
-	D2D1_POINT_2F* subarray = new D2D1_POINT_2F[multiplies_n_vex * 256];
+	geometries* subarray;
+	if (n_geom - 1)
+		subarray = new geometries[n_geom - 1];
 	int j = 0;
 	for (int i = 0; i < n_vertexes; i++)
 	{
 		if (i != index)
 		{
-			subarray[j] = vertexes[i];
+			subarray[j] = geom[i];
 			j++;
 		}
-	}
-	delete[] vertexes;
-	n_vertexes--;
-	vertexes = subarray;
-}
-
-void PFindingclass::checkvertexes()
-{
-	bool recheck = false;
-	do
-	{
-		for (int i = 0; i < n_vertexes; i++)
+		else
 		{
-			for (int j = 0; j < n_vertexes; j++)
-			{
-				if (i >= j)
-					continue;
-				if (vertexes[i].x == vertexes[j].x && vertexes[i].y == vertexes[j].y)
-				{
-					recheck = true;
-					DeleteVertex(j);
-					DeleteVertex(i);
-					goto reneval;
-				}
-			}
+			delete[] geom[i].vex;
 		}
-	reneval:
-	} while (recheck);
+	}
+	delete[] geom;
+	n_vertexes--;
+	geom = subarray;
 }
 
 bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
@@ -67,31 +46,118 @@ bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
 	return false;
 }
 
-void PFindingclass::chceckgeom()
+void PFindingclass::deletevertex(int geomindex, int vexindex)
+{
+	D2D1_POINT_2F* vertexes;
+	if (geom[geomindex].n_vex - 1)
+		vertexes = new D2D1_POINT_2F[geom[geomindex].n_vex - 1];
+
+	int j = 0;
+	for (int i = 0; i < geom[geomindex].n_vex; i++)
+	{
+		if (vexindex == i)
+			continue;
+		vertexes[j] = geom[geomindex].vex[i];
+	}
+	delete[] geom[geomindex].vex;
+	geom[geomindex].vex = vertexes;
+	geom[geomindex].n_vex--;
+}
+
+void PFindingclass::addvertex(int geomindex, D2D1_POINT_2F input)
+{
+	D2D1_POINT_2F* vertexes = new D2D1_POINT_2F[geom[geomindex].n_vex + 1];
+	for (int i = 0; i < geom[geomindex].n_vex; i++)
+	{
+		vertexes[i] = geom[geomindex].vex[i];
+	}
+	vertexes[geom[geomindex].n_vex] = input;
+	delete[] geom[geomindex].vex;
+	geom[geomindex].vex = vertexes;
+	geom[geomindex].n_vex++;
+}
+
+void PFindingclass::connectgeom()
+{
+	geometries New_geometries;
+	bool Recheck;
+	do
+	{
+		Recheck = false;
+		for (int i = 0; i < n_geom; i++)
+		{
+			for (int j = 0; j < n_geom; j++)
+			{
+				if (i >= j)
+					continue;
+				for (int k = 0; k < geom[i].n_vex; k++)
+				{
+					for (int l = 0; l < geom[j].n_vex; l++)
+					{
+						if (geom[i].vex[k].x == geom[j].vex[l].x && geom[i].vex[k].y == geom[j].vex[l].y)
+						{
+							geometries First_to_connect = geom[i];
+							geometries Second_to_connect = geom[j];
+							New_geometries.n_vex = First_to_connect.n_vex + Second_to_connect.n_vex;
+							New_geometries.vex = new D2D1_POINT_2F[New_geometries.n_vex];
+							int m = 0;
+							for (int n = 0; n < First_to_connect.n_vex; n++)
+							{
+								New_geometries.vex[m] = First_to_connect.vex[n];
+								m++;
+							}
+
+							for (int n = 0; n < Second_to_connect.n_vex; n++)
+							{
+								New_geometries.vex[m] = First_to_connect.vex[n];
+								m++;
+							}
+							DeleteGeom(j);
+							DeleteGeom(i);
+							AddGeom(New_geometries);
+							Recheck = true;
+							goto recheck;
+						}
+					}
+				}
+			}
+		}
+	recheck:
+	} while (Recheck);
+}
+
+void PFindingclass::checkvertexesingeom()
 {
 	for (int i = 0; i < n_geom; i++)
 	{
-		for (int j = 0; j < n_geom; j++)
+		bool recheck;
+		do
 		{
-
-		}
+			recheck = false;
+			D2D1_POINT_2F* chcecking = geom[i].vex;
+			for (int j = 0; j < geom[i].n_vex; j++)
+			{
+				for (int k = 0; k < geom[i].n_vex; k++)
+				{
+					if (j >= k)
+						continue;
+					if (chcecking[j].x == chcecking[k].x && chcecking[j].y == chcecking[k].y)
+					{
+						deletevertex(i, j);
+						recheck = true;
+						goto reneval;
+					}
+				}
+			}
+			reneval:
+		} while (recheck);
 	}
 }
 
-void PFindingclass::addgeom(D2D1_POINT_2F * vex)
+void PFindingclass::chceckgeom()
 {
-	geometries* subarray = new geometries[n_geom + 1];
-	for (int i = 0; i < n_geom; i++)
-	{
-		subarray[i] = geom[i];
-	}
-
-	subarray[n_geom].n_vex = 4;
-	subarray[n_geom].vex = vex;
-
-	delete[] geom;
-	n_geom++;
-	geom = subarray;
+	connectgeom();
+	checkvertexesingeom();
 }
 
 PFindingclass::PFindingclass()
@@ -105,10 +171,13 @@ PFindingclass::PFindingclass()
 void PFindingclass::AddBuilding(Building * input)
 {
 	D2D1_POINT_2F* array = new D2D1_POINT_2F[4];
+	geometries new_geom;
 	array[0] = Point2F(input->GetStartCorner().x, input->GetStartCorner().y);
 	array[1] = Point2F(input->GetStartCorner().x + input->GetSize().width, input->GetStartCorner().y);
 	array[2] = Point2F(input->GetStartCorner().x, input->GetStartCorner().y + input->GetSize().height);
 	array[3] = Point2F(input->GetStartCorner().x + input->GetSize().width, input->GetStartCorner().y + input->GetSize().height);
-	addgeom(array);
-	checkvertexes();
+	new_geom.vex = array;
+	new_geom.n_vex = 4;
+	AddGeom(new_geom);
+	chceckgeom();
 }
