@@ -35,6 +35,7 @@ SystemClass::SystemClass()
 	n_Workshop = 0;
 	CityCenter = Point2L(4000, 3000);
 	cost_of_life = 300;
+	Graphinput.path = 0;
 }
 
 
@@ -271,7 +272,7 @@ bool SystemClass::Frame()
 	if (daily_timer > 1000)
 	{
 		UpdateCity(1000);
-		daily_timer -= 100;
+		daily_timer -= 10;
 		monthly_timer++;
 		if (monthly_timer == 30)
 		{
@@ -279,16 +280,17 @@ bool SystemClass::Frame()
 			monthly_timer = 0;
 		}
 	}
-	GRAPH_INP input;
-	input.AmmountOfObjects = AmmountofObjectsToRender;
-	input.Center = Center;
-	input.city = &City;
-	input.FPS = (int)m_Timer->GetFPS();
-	input.Objects = List_to_render;
-	input.QuadTree = &QuadTree;
-	input.Scroll = Scroll;
-	input.Sparks = SparkList;
-	result = m_Graphics->Frame(input, &City);
+	Graphinput.AmmountOfObjects = AmmountofObjectsToRender;
+	Graphinput.Center = Center;
+	Graphinput.city = &City;
+	Graphinput.FPS = (int)m_Timer->GetFPS();
+	Graphinput.Objects = List_to_render;
+	Graphinput.QuadTree = &QuadTree;
+	Graphinput.Scroll = Scroll;
+	Graphinput.Sparks = SparkList;
+	Graphinput.city = &City;
+	Graphinput.boxes = &pathsys;
+	result = m_Graphics->Frame(Graphinput);
 	if(!result)
 	{
 		return false;
@@ -428,6 +430,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 						else if (m_Graphics->Mode.Unit == OBJTYPES::COMMANDER)
 						{
 							((CommanderClass*)Selected)->SetTarget(Global);
+							Graphinput.path = pathsys.RequestPath(((CommanderClass*)Selected)->GetPosition(), Global);
 						}
 						else if (m_Graphics->Mode.Unit == OBJTYPES::COMMANDCENTER)
 						{
@@ -768,6 +771,7 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		}
 
 		City.AddFactory((FactoryClass*)Obj, Point2L((LONG)Pos.x, (LONG)Pos.y));
+		pathsys.AddBuilding((FactoryClass*)Obj);
 	}
 
 	Add_to_list_to_render(Obj);

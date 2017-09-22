@@ -251,11 +251,11 @@ void GraphicsClass::Shutdown()
 }
 
 
-bool GraphicsClass::Frame(GRAPH_INP input, Cityclass* city)
+bool GraphicsClass::Frame(GRAPH_INP input)
 {
 	bool result;
 
-	result = Render(input, city);
+	result = Render(input);
 	if(!result)
 	{
 		return false;
@@ -264,7 +264,7 @@ bool GraphicsClass::Frame(GRAPH_INP input, Cityclass* city)
 	return true;
 }
 
-bool GraphicsClass::Render(GRAPH_INP input, Cityclass* city)
+bool GraphicsClass::Render(GRAPH_INP input)
 {
 	HRESULT HR;
 	D2D1_POINT_2F CenSiz;
@@ -299,7 +299,10 @@ bool GraphicsClass::Render(GRAPH_INP input, Cityclass* city)
 		}
 	}
 	//QuadTree->Draw(m_Direct2D->GetRenderTarget(), GreenBrush);
-	city->Draw_streets(m_Direct2D->GetRenderTarget(), GreenBrush);
+	//input.city->Draw_streets(m_Direct2D->GetRenderTarget(), GreenBrush);
+	input.boxes->DrawGeom(m_Direct2D->GetRenderTarget(), GreenBrush);
+	if (input.path != 0)
+		input.path->Draw_streets(m_Direct2D->GetRenderTarget(), GreenBrush);
 	m_Direct2D->GetRenderTarget()->SetTransform(Matrix3x2F::Identity());
 	DrawInterface();
 	DrawCursor();
@@ -651,7 +654,7 @@ void GraphicsClass::DrawObject(Object* input)
 		}
 		if (((Building*)input)->GetUnitType() == OBJTYPES::FACTORY)
 		{
-			m_Direct2D->GetRenderTarget()->FillEllipse(Ellipse(((FactoryClass*)input)->GetEnter(), 10, 10), GreenBrush);
+			//m_Direct2D->GetRenderTarget()->FillEllipse(Ellipse(((FactoryClass*)input)->GetEnter(), 10, 10), GreenBrush);
 		}
 		//BuildingsTexture->SetTransform(Matrix3x2F::Identity());
 	}

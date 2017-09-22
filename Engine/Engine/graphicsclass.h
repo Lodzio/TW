@@ -16,6 +16,7 @@
 #include "Employee.h"
 #include "Factory.h"
 #include "city.h"
+#include "Pathfinding.h"
 
 /////////////
 // GLOBALS //
@@ -51,6 +52,8 @@ struct GRAPH_INP
 	Cityclass* city;
 	int FPS;
 	SparksClass* Sparks;
+	PFindingclass* boxes;
+	pathstruct* path;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,14 +68,14 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame(GRAPH_INP input, Cityclass* city);
+	bool Frame(GRAPH_INP input);
 	void UpdateState(int X, int Y, int Scroll, POINT Center);
 	UINT GetGlowed();
 	D2D1_SIZE_U GetMapSize();
 	Modestruct Mode;
 
 private:
-	bool Render(GRAPH_INP input, Cityclass* city);
+	bool Render(GRAPH_INP input);
 	HRESULT LoadBitmapFromFile(ID2D1RenderTarget *pRenderTarget, PCWSTR uri, ID2D1Bitmap **ppBitmap);
 	bool DrawInterface();
 	void DrawCursor();

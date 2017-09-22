@@ -63,6 +63,7 @@ private:
 	Object** List_to_render;
 	void Add_to_list_to_render(Object* input);
 	void Remove_from_list_to_render(Object* input);
+	PFindingclass pathsys;
 
 	D2D1_POINT_2L CityCenter;
 	InputClass* m_Input;
@@ -127,6 +128,9 @@ private:
 	void UpdateCity(int timer);
 	void EndOfMonth();
 	void lookForJob();
+
+
+	GRAPH_INP Graphinput;
 };
 
 
