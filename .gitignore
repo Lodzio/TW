@@ -5,3 +5,4 @@ Engine/x64/*
 Engine/Debug/*
 Engine/Engine/Debug/*
 *.opendb
+*.suo
