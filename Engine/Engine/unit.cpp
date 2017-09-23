@@ -1,4 +1,5 @@
 #include "unit.h"
+#include "Pathfinding.h"
 
 UnitClass::UnitClass()
 {
@@ -10,9 +11,10 @@ UnitClass::UnitClass()
 	Range_Of_Object = 40;
 }
 
-void UnitClass::SetTarget(D2D1_POINT_2F input)
+void UnitClass::SetTarget(pathstruct* input)
 {
-	Target = input;
+	Path = input;
+	Target = Path->GetPoint();
 	Mode.UnitMode = Mode.MODE_MOVING;
 }
 
@@ -50,7 +52,9 @@ void UnitClass::CalcPosition(int timeDiff)
 				SpeedNeeded.y = 0;
 				if (Mode.UnitMode != Mode.MODE_REPARING)
 				{
-					Mode.UnitMode = false;
+					Target = Path->GetPoint();
+					if (Target.x == -1 && Target.y == -1)
+						Mode.UnitMode = false;
 				}
 			}
 			else

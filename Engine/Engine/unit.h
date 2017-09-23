@@ -2,6 +2,8 @@
 #define _UNITCLASS_H_
 #include "object.h"
 
+struct pathstruct;
+struct PFindingclass;
 
 class UnitClass : public Object
 {
@@ -19,7 +21,7 @@ protected:
 	};
 public:
 	UnitClass();
-	void SetTarget(D2D1_POINT_2F Target);
+	void SetTarget(pathstruct* Target);
 	float MaxAcceleration;
 	void SetMaxAcceleration(float input);
 	void SetMaxSpeed(float input);
@@ -34,6 +36,7 @@ protected:
 	D2D1_POINT_2F speed;
 	float MaxSpeed;
 	D2D1_POINT_2F Target;
+	pathstruct* Path;
 	D2D1_POINT_2F acceleration;
 	D2D1_POINT_2F resistance;
 	int Range_Of_Object;

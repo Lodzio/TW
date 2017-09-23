@@ -29,6 +29,7 @@ private:
 	{
 		D2D1_POINT_2F point;
 		stack* older;
+		stack();
 	};
 
 	void delete_all();
@@ -45,13 +46,16 @@ class PFindingclass
 {
 	struct geometries
 	{
+		D2D1_POINT_2F* mesh;
 		D2D1_POINT_2F* vex;
 		int n_vex;
+		bool changed;
+		geometries() : mesh(0) {}
 	};
 	geometries* geom;
 	int n_geom;
-	D2D1_POINT_2F* vertexes;
-	int n_vertexes;
+	D2D1_POINT_2F* mesh;
+	int n_mesh;
 	void AddGeom(geometries input);
 	void DeleteGeom(int index);
 	bool chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second);
@@ -60,8 +64,9 @@ class PFindingclass
 	void connectgeom();
 	void correctionofvertexingeom();
 	void checkvertexesingeom(); //delete doubles
+	void createmesh();
 	void chceckgeom();
-	void collect_vertices();
+	void collect_mesh();
 	
 public:
 	PFindingclass();

@@ -1,12 +1,12 @@
 #include "Squad.h"
 
-void SquadClass::SetTargetToMove(D2D1_POINT_2F target)
+void SquadClass::SetTargetToMove(pathstruct* target)
 {
 	int MaxRange = 250;
 
 	for (int i = 0; i < Members; i++)
 	{
-		if (MembersList[i] == 0)
+		/*if (MembersList[i] == 0)
 		{
 			continue;
 		}
@@ -15,8 +15,8 @@ void SquadClass::SetTargetToMove(D2D1_POINT_2F target)
 		float X = (float)(MaxRange * 2 * (Xrand / 100.0) - MaxRange);
 		MaxRange = (int)sqrt(pow(MaxRange, 2) - pow(X, 2));
 		X += target.x;
-		float Y = (float)((MaxRange * 2 * (Yrand / 100.0) - MaxRange) + target.y);
-		MembersList[i]->SetTarget(Point2F(X, Y));
+		float Y = (float)((MaxRange * 2 * (Yrand / 100.0) - MaxRange) + target.y);*/
+		MembersList[i]->SetTarget(target);
 	}
 }
 

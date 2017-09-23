@@ -1,4 +1,5 @@
 #include "Pathfinding.h"
+#define MESHDEPTH 20
 
 void PFindingclass::AddGeom(geometries input)
 {
@@ -43,8 +44,14 @@ bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
 	D2D1_POINT_2F vec;
 	vec.x = second.x - first.x;
 	vec.y = second.y - first.y;
-	double tg_vec = vec.y / vec.x;
-	double ctg_vec = vec.x / vec.y;
+
+	double tg_vec;
+	if (vec.x != 0)
+		tg_vec = vec.y / vec.x;
+
+	double ctg_vec;
+	if (vec.y != 0)
+		ctg_vec = vec.x / vec.y;
 
 	for (int i = 0; i < n_geom; i++)
 	{
@@ -53,18 +60,36 @@ bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
 		{
 			if (geocheck[j].x == geocheck[j + 1].x)
 			{
-				double y = (geocheck[j].x * tg_vec) - (first.x * tg_vec) + first.y;
-				if (geocheck[j].y > y && geocheck[j + 1].y < y)
+				double k = (geocheck[j].x - first.x) / vec.x;
+				if (k <= 0 || k >= 1)
+					continue;
+
+				double y;
+				if (vec.x != 0)
+					y = (geocheck[j].x * tg_vec) - (first.x * tg_vec) + first.y;
+				else
+					continue;
+
+				if (geocheck[j].y >= y && geocheck[j + 1].y <= y)
 					return true;
-				if (geocheck[j].y < y && geocheck[j + 1].y > y)
+				if (geocheck[j].y <= y && geocheck[j + 1].y >= y)
 					return true;
 			}
 			else if (geocheck[j].y == geocheck[j + 1].y)
 			{
-				double x = (geocheck[j].y * ctg_vec) - (first.y * ctg_vec) + first.x;
-				if (geocheck[j].x > x && geocheck[j + 1].x < x)
+				double k = (geocheck[j].y - first.y) / vec.y;
+				if (k <= 0 || k >= 1)
+					continue;
+
+				double x;
+				if (vec.y != 0)
+					x = (geocheck[j].y * ctg_vec) - (first.y * ctg_vec) + first.x;
+				else
+					continue;
+
+				if (geocheck[j].x >= x && geocheck[j + 1].x <= x)
 					return true;
-				if (geocheck[j].x < x && geocheck[j + 1].x > x)
+				if (geocheck[j].x <= x && geocheck[j + 1].x >= x)
 					return true;
 			}
 		}
@@ -140,6 +165,7 @@ void PFindingclass::connectgeom()
 								New_geometries.vex[m] = Second_to_connect.vex[n];
 								m++;
 							}
+							New_geometries.changed = true;
 							DeleteGeom(j);
 							DeleteGeom(i);
 							AddGeom(New_geometries);
@@ -286,6 +312,7 @@ void PFindingclass::correctionofvertexingeom()
 
 		if (to_correct)
 		{
+			geom[i].changed = true;
 			D2D1_POINT_2F* copy = new D2D1_POINT_2F[n_Array];
 			for (int j = 0; j < n_Array; j++)
 				copy[j] = ArrayToChceck[j];
@@ -341,6 +368,7 @@ void PFindingclass::checkvertexesingeom()
 					{
 						deletevertex(i, k);
 						deletevertex(i, j);
+						geom[i].changed = true;
 						recheck = true;
 						goto reneval;
 					}
@@ -352,38 +380,77 @@ void PFindingclass::checkvertexesingeom()
 	}
 }
 
+void PFindingclass::createmesh()
+{
+	for (int i = 0; i < n_geom; i++)
+	{
+		if (!geom[i].changed)
+			continue;
+		if (geom[i].mesh)
+			delete[] geom[i].mesh;
+		geom[i].mesh = new D2D1_POINT_2F[geom[i].n_vex];
+		D2D1_POINT_2F* mesh = geom[i].mesh;
+		D2D1_POINT_2F* vex = geom[i].vex;
+
+		for (int j = 0; j < geom[i].n_vex; j++)
+		{
+			D2D1_POINT_2F delta;
+			float LenghtVec;
+			int next, last;
+
+			if (j == 0)
+				last = geom[i].n_vex - 1;
+			else
+				last = j - 1;
+
+			if (j == geom[i].n_vex - 1)
+				next = 0;
+			else
+				next = j + 1;
+
+			LenghtVec = sqrt(pow(vex[next].x - vex[last].x, 2) + pow(vex[next].y - vex[last].y, 2));
+			delta.y = -(((vex[next].x - vex[last].x) / LenghtVec) * MESHDEPTH); // y = -x
+			delta.x = (((vex[next].y - vex[last].y) / LenghtVec) * MESHDEPTH); //x = y
+
+			mesh[j].x = vex[j].x + delta.x;
+			mesh[j].y = vex[j].y + delta.y;
+		}
+	}
+}
+
 void PFindingclass::chceckgeom()
 {
 	connectgeom();
 	checkvertexesingeom();
 	correctionofvertexingeom();
-	collect_vertices();
+	createmesh();
+	collect_mesh();
 }
 
-void PFindingclass::collect_vertices()
+void PFindingclass::collect_mesh()
 {
-	if (n_vertexes)
-		delete[] vertexes;
-	n_vertexes = 0;
+	if (n_mesh)
+		delete[] mesh;
+	n_mesh = 0;
 	for (int i = 0; i < n_geom; i++)
 	{
-		n_vertexes += geom[i].n_vex;
+		n_mesh += geom[i].n_vex;
 	}
 
-	vertexes = new D2D1_POINT_2F[n_vertexes];
+	mesh = new D2D1_POINT_2F[n_mesh];
 
 	int k = 0;
 	for (int i = 0; i < n_geom; i++)
 		for (int j = 0; j < geom[i].n_vex; j++)
 		{
-			vertexes[k] = geom[i].vex[j];
+			mesh[k] = geom[i].mesh[j];
 			k++;
 		}
 }
 
 PFindingclass::PFindingclass()
 {
-	n_vertexes = 0;
+	n_mesh = 0;
 	n_geom = 0;
 }
 
@@ -419,8 +486,8 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 	pathstruct* output = new pathstruct;
 	pathstruct* possiblepaths = new pathstruct[256];
 	int n_ppaths = 0;
-	int* closedpathrange = new int[n_vertexes];
-	for (int i = 0; i < n_vertexes; i++)
+	int* closedpathrange = new int[n_mesh];
+	for (int i = 0; i < n_mesh; i++)
 		closedpathrange[i] = 0;
 	int finded_ways;
 	double smallestrange = -1;
@@ -429,14 +496,15 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 
 	if (chceckcollision(A, B))
 	{
-		for (int i = 0; i < n_vertexes; i++)
+		for (int i = 0; i < n_mesh; i++)
 		{
-			if (!chceckcollision(A, vertexes[i]))
+			if (!chceckcollision(A, mesh[i]))
 			{
-				double range = sqrt(pow(vertexes[i].x - A.x, 2) + pow(vertexes[i].y - A.y, 2));
+				double range = sqrt(pow(mesh[i].x - A.x, 2) + pow(mesh[i].y - A.y, 2));
 				if (closedpathrange[i] == 0)
 				{
-					possiblepaths[n_ppaths].Put_new_point(vertexes[i]);
+					possiblepaths[n_ppaths].Put_new_point(A);
+					possiblepaths[n_ppaths].Put_new_point(mesh[i]);
 					possiblepaths[n_ppaths].range += range;
 					n_ppaths++;
 					closedpathrange[i] = possiblepaths[n_ppaths].range;
@@ -458,10 +526,14 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 				index++;
 			}
 			n_ppaths = index;
+			delete []possiblepaths;
+			possiblepaths = newarray;
+			int actual_n_paths = n_ppaths;
+			bool possibilites;
 
-			finded_ways = 0;
-			for (int i = 0; i < n_ppaths; i++)
+			for (int i = 0; i < actual_n_paths; i++)
 			{
+				possibilites = false;
 				if (possiblepaths[i].isempty())
 					continue;
 				actualposition = possiblepaths[i].Newestpoint();
@@ -470,45 +542,64 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 					smallestrange = possiblepaths[i].range;
 					continue;
 				}
-				for (int j = 0; j < n_vertexes; j++)
+				if (!chceckcollision(actualposition, B))
 				{
-					if (!possiblepaths[i].is_in_stack(vertexes[j]))
+					possiblepaths[i].Put_new_point(B);
+					double range = sqrt(pow(B.x - actualposition.x, 2) + pow(B.y - actualposition.y, 2));
+					possiblepaths[i].range += range;
+					continue;
+				}
+
+				for (int j = 0; j < n_mesh; j++)
+				{
+					if (chceckcollision(actualposition, mesh[j]))
 					{
-						double range = sqrt(pow(vertexes[j].x - actualposition.x, 2) + pow(vertexes[j].y - actualposition.y, 2));
-						if (closedpathrange[j] <= range + possiblepaths[i].range)
-						{
-							possiblepaths[i].delete_all();
-						}
-						else
-						{
-							possiblepaths[n_ppaths] = possiblepaths[i];
-							possiblepaths[n_ppaths].Put_new_point(vertexes[j]);
-							possiblepaths[n_ppaths].range += range;
+						continue;
+					}
 
-							if (closedpathrange[j] != 0)
-							for (int k = 0; k < n_ppaths; k++)
-							{
-								if (possiblepaths[k].is_in_stack(vertexes[j]))
-								{
-									possiblepaths[k].delete_all();
-								}
-							}
+					if (possiblepaths[i].is_in_stack(mesh[j]))
+					{
+						continue;
+					}
 
-							closedpathrange[j] = possiblepaths[n_ppaths].range;
-							possiblepaths[i].delete_all();
-							n_ppaths++;
+					double range = sqrt(pow(mesh[j].x - actualposition.x, 2) + pow(mesh[j].y - actualposition.y, 2));
+					if (closedpathrange[j] <= range + possiblepaths[i].range && closedpathrange[j] != 0)
+					{
+						continue;
+					}
+					
+					possiblepaths[n_ppaths] = possiblepaths[i];
+					possiblepaths[n_ppaths].Put_new_point(mesh[j]);
+					possiblepaths[n_ppaths].range += range;
+					closedpathrange[j] = possiblepaths[n_ppaths].range;
+					n_ppaths++;
+					possibilites = true;
+
+					if (closedpathrange[j] != 0)
+					for (int k = 0; k < actual_n_paths; k++)
+					{
+						if (i == k)
+							continue;
+						if (possiblepaths[k].is_in_stack(mesh[j]))
+						{
+							possiblepaths[k].delete_all();
 						}
 					}
 				}
+				if (!possibilites)
+					possiblepaths[i].delete_all();
 			}
 			
+			finded_ways = 0;
 			if (smallestrange != -1)
 				for (int i = 0; i < n_ppaths; i++)
 				{
+					if (possiblepaths[i].isempty())
+						continue;
 					actualposition = possiblepaths[i].Newestpoint();
 					if (actualposition.x == B.x && actualposition.y == B.y)
 					{
-						if (possiblepaths[i].range < smallestrange)
+						if (possiblepaths[i].range <= smallestrange)
 						{
 							smallestrange = possiblepaths[i].range;
 							*output = possiblepaths[i];
@@ -522,6 +613,7 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 	}
 	else
 	{
+		possiblepaths[0].Put_new_point(A);
 		possiblepaths[0].Put_new_point(B);
 		*output = possiblepaths[0];
 		possiblepaths[0].delete_all();
@@ -551,14 +643,29 @@ void pathstruct::delete_all()
 {
 	while (last_path)
 		GetPoint();
+	range = 0;
 }
 
 void pathstruct::Put_new_point(D2D1_POINT_2F input)
 {
-	stack* new_path = new stack;
-	new_path->point = input;
-	new_path->older = last_path;
-	last_path = new_path;
+	stack* actual;
+	if (last_path)
+	{
+		actual = last_path;
+
+		while (actual->older)
+			actual = actual->older;
+
+		stack* new_path = new stack;
+		new_path->point = input;
+		actual->older = new_path;
+	}
+	else
+	{
+		stack* new_path = new stack;
+		new_path->point = input;
+		last_path = new_path;
+	}
 }
 
 bool pathstruct::isempty()
@@ -572,39 +679,39 @@ bool pathstruct::is_in_stack(D2D1_POINT_2F input)
 {
 	stack* actual = last_path;
 	
-	do
+	while (actual)
 	{
 		if (input.x == actual->point.x && input.y == actual->point.y)
 			return true;
-	} while (actual->older != 0);
+		actual = actual->older;
+	}
 	return false;
 }
 
 pathstruct pathstruct::operator=(pathstruct input)
 {
-	pathstruct output;
-	stack* actual = 0;
+	stack* actual;
 	stack* actualcopied;
-	output.range = input.range;
+	range = input.range;
 
 	if (input.last_path)
 	{
-		output.last_path = new stack;
-		output.last_path->point = input.last_path->point;
-		actual = output.last_path;
+		last_path = new stack;
+		actual = last_path;
 		actualcopied = input.last_path;
 	}
 	else
-		return output;
+		return *this;
 
 	while (actualcopied)
 	{
-		actual->older = new stack;
+		if (actualcopied->older)
+			actual->older = new stack;
 		actual->point = actualcopied->point;
 		actual = actual->older;
 		actualcopied = actualcopied->older;
 	} 
-	return output;
+	return *this;
 }
 
 D2D1_POINT_2F pathstruct::Newestpoint()
@@ -624,8 +731,17 @@ void pathstruct::Draw_streets(ID2D1RenderTarget * target, ID2D1Brush * brush)
 	while (actual)
 	{
 		next = actual->older;
-		target->DrawLine(actual->point, next->point, brush, 1);
+		if (next)
+		{
+			target->DrawLine(actual->point, next->point, brush, 1);
+			target->DrawEllipse(Ellipse(next->point, 7, 7), brush);
+		}
 		target->DrawEllipse(Ellipse(actual->point, 5, 5), brush);
-		target->DrawEllipse(Ellipse(next->point, 7, 7), brush);
+		actual = next;
 	}
+}
+
+pathstruct::stack::stack()
+{
+	older = 0;
 }

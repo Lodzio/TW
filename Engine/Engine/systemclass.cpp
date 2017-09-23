@@ -2,6 +2,7 @@
 // Filename: systemclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "systemclass.h"
+#include "Pathfinding.h"
 
 SystemClass::SystemClass()
 {
@@ -272,7 +273,7 @@ bool SystemClass::Frame()
 	if (daily_timer > 1000)
 	{
 		UpdateCity(1000);
-		daily_timer -= 10;
+		daily_timer -= 1000;
 		monthly_timer++;
 		if (monthly_timer == 30)
 		{
@@ -429,8 +430,8 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 						}
 						else if (m_Graphics->Mode.Unit == OBJTYPES::COMMANDER)
 						{
-							((CommanderClass*)Selected)->SetTarget(Global);
 							Graphinput.path = pathsys.RequestPath(((CommanderClass*)Selected)->GetPosition(), Global);
+							((CommanderClass*)Selected)->SetTarget(Graphinput.path);
 						}
 						else if (m_Graphics->Mode.Unit == OBJTYPES::COMMANDCENTER)
 						{
