@@ -106,3 +106,20 @@ UINT SquadClass::GetType()
 {
 	return SquadType;
 }
+
+D2D1_POINT_2F SquadClass::GetPosition()
+{
+	D2D1_POINT_2F output;
+	output.x = 0;
+	output.y = 0;
+	for (int i = 0; i < Members; i++)
+	{
+		output.x += MembersList[i]->GetPosition().x;
+		output.y += MembersList[i]->GetPosition().y;
+	}
+
+	output.x /= Members;
+	output.y /= Members;
+
+	return output;
+}

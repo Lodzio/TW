@@ -18,6 +18,7 @@ public:
 	void CalcShooting(float timer, SparksClass*& Sparks);
 	int GetMembers();
 	UINT GetType();
+	D2D1_POINT_2F GetPosition();
 private:
 	int MaxSquadMembers;
 	UnitClass** MembersList;

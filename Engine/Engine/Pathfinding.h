@@ -21,7 +21,9 @@ struct pathstruct
 public:
 	friend class PFindingclass;
 	D2D1_POINT_2F GetPoint();
+	bool isempty();
 	void Draw_streets(ID2D1RenderTarget* target, ID2D1Brush* brush);
+	pathstruct operator= (pathstruct input);
 	pathstruct();
 private:
 
@@ -34,11 +36,9 @@ private:
 
 	void delete_all();
 	void Put_new_point(D2D1_POINT_2F input);
-	bool isempty();
 	bool is_in_stack(D2D1_POINT_2F input);
 	stack* last_path;
 	double range;
-	pathstruct operator= (pathstruct input);
 	D2D1_POINT_2F Newestpoint();
 };
 

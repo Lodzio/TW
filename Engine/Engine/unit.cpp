@@ -44,9 +44,9 @@ void UnitClass::CalcPosition(int timeDiff)
 		double distance = sqrt(pow(Subtract_Pos.x, 2) + pow(Subtract_Pos.y, 2));
 		D2D1_POINT_2F SpeedNeeded;
 
-		if (distance < 5 * Size.height)
+		if (distance < 2 * Size.height)
 		{
-			if (distance < Size.height)
+			if (distance < Size.height / 3.0)
 			{
 				SpeedNeeded.x = 0;
 				SpeedNeeded.y = 0;
@@ -54,13 +54,22 @@ void UnitClass::CalcPosition(int timeDiff)
 				{
 					Target = Path->GetPoint();
 					if (Target.x == -1 && Target.y == -1)
+					{
 						Mode.UnitMode = false;
+						delete Path;
+						Path = 0;
+					}
 				}
+			}
+			else if (Path->isempty())
+			{
+				SpeedNeeded.x = (float)(Subtract_Pos.x / distance * MaxSpeed * distance / (2 * Size.height));
+				SpeedNeeded.y = (float)(Subtract_Pos.y / distance * MaxSpeed * distance / (2 * Size.height));
 			}
 			else
 			{
-				SpeedNeeded.x = (float)(Subtract_Pos.x / distance * MaxSpeed * distance / (5 * Size.height));
-				SpeedNeeded.y = (float)(Subtract_Pos.y / distance * MaxSpeed * distance / (5 * Size.height));
+				SpeedNeeded.x = (float)(Subtract_Pos.x / distance * MaxSpeed);
+				SpeedNeeded.y = (float)(Subtract_Pos.y / distance * MaxSpeed);
 			}
 		}
 		else

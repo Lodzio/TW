@@ -489,7 +489,7 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 	int* closedpathrange = new int[n_mesh];
 	for (int i = 0; i < n_mesh; i++)
 		closedpathrange[i] = 0;
-	int finded_ways;
+	int loops_after_finded_ways;
 	double smallestrange = -1;
 	
 	D2D1_POINT_2F actualposition;
@@ -503,14 +503,14 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 				double range = sqrt(pow(mesh[i].x - A.x, 2) + pow(mesh[i].y - A.y, 2));
 				if (closedpathrange[i] == 0)
 				{
-					possiblepaths[n_ppaths].Put_new_point(A);
 					possiblepaths[n_ppaths].Put_new_point(mesh[i]);
 					possiblepaths[n_ppaths].range += range;
-					n_ppaths++;
 					closedpathrange[i] = possiblepaths[n_ppaths].range;
+					n_ppaths++;
 				}
 			}
 		}
+		loops_after_finded_ways = 0;
 		do
 		{
 			//cleaning paths
@@ -540,6 +540,7 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 				if (actualposition.x == B.x && actualposition.y == B.y)
 				{
 					smallestrange = possiblepaths[i].range;
+					loops_after_finded_ways++;
 					continue;
 				}
 				if (!chceckcollision(actualposition, B))
@@ -590,7 +591,6 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 					possiblepaths[i].delete_all();
 			}
 			
-			finded_ways = 0;
 			if (smallestrange != -1)
 				for (int i = 0; i < n_ppaths; i++)
 				{
@@ -604,21 +604,22 @@ pathstruct* PFindingclass::RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B)
 							smallestrange = possiblepaths[i].range;
 							*output = possiblepaths[i];
 						}
-						finded_ways++;
 					}
 				}
-		} while (finded_ways < 3);
+			if (loops_after_finded_ways)
+				loops_after_finded_ways++;
+		} while (loops_after_finded_ways < 3);
 		for (int i = 0; i < n_ppaths; i++)
 			possiblepaths[i].delete_all();
 	}
 	else
 	{
-		possiblepaths[0].Put_new_point(A);
 		possiblepaths[0].Put_new_point(B);
 		*output = possiblepaths[0];
 		possiblepaths[0].delete_all();
-		delete closedpathrange;
 	}
+	delete[] closedpathrange;
+	delete[] possiblepaths;
 	return output;
 }
 

@@ -426,12 +426,15 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 					{
 						if (m_Graphics->Mode.Unit == OBJTYPES::ENGINEERS || m_Graphics->Mode.Unit == OBJTYPES::SOLDIER)
 						{
-							((SquadClass*)Selected)->SetTargetToMove(Global);
+							pathstruct* input = pathsys.RequestPath(((SquadClass*)Selected)->GetPosition(), Global);
+							((SquadClass*)Selected)->SetTargetToMove(input);
 						}
 						else if (m_Graphics->Mode.Unit == OBJTYPES::COMMANDER)
 						{
 							Graphinput.path = pathsys.RequestPath(((CommanderClass*)Selected)->GetPosition(), Global);
-							((CommanderClass*)Selected)->SetTarget(Graphinput.path);
+							pathstruct* input = new pathstruct;
+							*input = *Graphinput.path;
+							((CommanderClass*)Selected)->SetTarget(input);
 						}
 						else if (m_Graphics->Mode.Unit == OBJTYPES::COMMANDCENTER)
 						{
@@ -912,7 +915,8 @@ void SystemClass::CreateNewSquad(UINT SquadType, UINT Fraction)
 			SquadBuf->AddMember(UnitBuf);
 		}
 		Buffor[PlayerOneSquadAmmount] = SquadBuf;
-		Buffor[PlayerOneSquadAmmount]->SetTargetToMove(((Object*)Selected)->GetPosition());
+		pathstruct* input = pathsys.RequestPath(SquadBuf->GetPosition(), ((Object*)Selected)->GetPosition());
+		Buffor[PlayerOneSquadAmmount]->SetTargetToMove(input);
 	}
 	if (PlayerOneSquads)
 	{
