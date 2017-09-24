@@ -1,6 +1,7 @@
 #include "Factory.h"
 #include "Employee.h"
 #include "city.h"
+#include "Pathfinding.h"
 
 void FactoryClass::Init_factory(UINT outObj, UINT inObj, int proddelay, EmployeeClass* own, UINT typ_fact, float salary, Cityclass* city, D2D1_POINT_2L index)
 {
@@ -35,6 +36,89 @@ void FactoryClass::Init_factory(UINT outObj, UINT inObj, int proddelay, Employee
 	}
 	else
 		factoring = false;
+}
+
+int FactoryClass::buy_products(FactoryClass * fac, int wanted)
+{
+	int output;
+	float supp_price = fac->GetPriceOfProducts();
+	int ammount = fac->GetAmmountOfOutputProducts();
+
+	if (ammount >= wanted)
+	{
+		if (Owner->GetWallet()->GetMoney() >= supp_price * wanted)
+		{
+			float bill = (float)fac->SellProducts(5);
+			amm_of_in_obj += wanted;
+			output = wanted;
+			if (bill > Owner->GetWallet()->GetMoney())
+			{
+				Owner->add_debt(fac->Owner, bill);
+			}
+			else
+			{
+				Owner->GetWallet()->Give_money(bill, fac->GetOwner()->GetWallet());
+			}
+		}
+		else
+		{
+			int available = Owner->GetWallet()->GetMoney() / supp_price;
+			if (available <= 0)
+				available = 1;
+			if (available > 0)
+			{
+				float bill = fac->SellProducts(available);
+				amm_of_in_obj += available;
+				output = available;
+				if (bill > Owner->GetWallet()->GetMoney())
+				{
+					Owner->add_debt(fac->Owner, bill);
+				}
+				else
+				{
+					Owner->GetWallet()->Give_money(bill, fac->GetOwner()->GetWallet());
+				}
+			}
+		}
+	}
+	else
+	{
+		if (Owner->GetWallet()->GetMoney() >= supp_price * ammount)
+		{
+			float bill = fac->SellProducts(ammount);
+			amm_of_in_obj += ammount;
+			output = ammount;
+			if (bill > Owner->GetWallet()->GetMoney())
+			{
+				Owner->add_debt(fac->Owner, bill);
+			}
+			else
+			{
+				Owner->GetWallet()->Give_money(bill, fac->GetOwner()->GetWallet());
+			}
+		}
+		else
+		{
+			int available = Owner->GetWallet()->GetMoney() / supp_price;
+			if (available <= 0)
+				available = 1;
+			if (available > 0)
+			{
+				float bill = fac->SellProducts(available);
+				amm_of_in_obj += available;
+				output = available;
+				if (bill > Owner->GetWallet()->GetMoney())
+				{
+					Owner->add_debt(fac->Owner, bill);
+				}
+				else
+				{
+					Owner->GetWallet()->Give_money(bill, fac->GetOwner()->GetWallet());
+				}
+			}
+		}
+	}
+	return output;
 }
 
 FactoryClass::~FactoryClass()
@@ -129,77 +213,13 @@ void FactoryClass::Update(int input)
 				if (lowest_price != supp_price || !ammount)
 					continue;
 
-				if (ammount)
+				buy_products((*Suppliers)[i], 5);
+
+				for (int j = 0; j < n_workers; j++)
 				{
-					if (ammount >= 5)
+					if (Workers[j]->isinfactory())
 					{
-						if (Owner->GetWallet()->GetMoney() >= supp_price * 5)
-						{
-							float bill = (float)(*Suppliers)[i]->SellProducts(5);
-							amm_of_in_obj += 5;
-							if (bill > Owner->GetWallet()->GetMoney())
-							{
-								Owner->add_debt((*Suppliers)[i]->Owner, bill);
-							}
-							else
-							{
-								Owner->GetWallet()->Give_money(bill, (*Suppliers)[i]->GetOwner()->GetWallet());
-							}
-						}
-						else
-						{
-							int available = Owner->GetWallet()->GetMoney() / supp_price;
-							if (available <= 0)
-								available = 1;
-							if (available > 0)
-							{
-								float bill = (*Suppliers)[i]->SellProducts(available);
-								amm_of_in_obj += available;
-								if (bill > Owner->GetWallet()->GetMoney())
-								{
-									Owner->add_debt((*Suppliers)[i]->Owner, bill);
-								}
-								else
-								{
-									Owner->GetWallet()->Give_money(bill, (*Suppliers)[i]->GetOwner()->GetWallet());
-								}
-							}
-						}
-					}
-					else
-					{
-						if (Owner->GetWallet()->GetMoney() >= supp_price * ammount)
-						{
-							float bill = (*Suppliers)[i]->SellProducts(ammount);
-							amm_of_in_obj += ammount;
-							if (bill > Owner->GetWallet()->GetMoney())
-							{
-								Owner->add_debt((*Suppliers)[i]->Owner, bill);
-							}
-							else
-							{
-								Owner->GetWallet()->Give_money(bill, (*Suppliers)[i]->GetOwner()->GetWallet());
-							}
-						}
-						else
-						{
-							int available = Owner->GetWallet()->GetMoney() / supp_price;
-							if (available <= 0)
-								available = 1;
-							if (available > 0)
-							{
-								float bill = (*Suppliers)[i]->SellProducts(available);
-								amm_of_in_obj += available;
-								if (bill > Owner->GetWallet()->GetMoney())
-								{
-									Owner->add_debt((*Suppliers)[i]->Owner, bill);
-								}
-								else
-								{
-									Owner->GetWallet()->Give_money(bill, (*Suppliers)[i]->GetOwner()->GetWallet());
-								}
-							}
-						}
+						Workers[j]->GoToFactory((*Suppliers)[i]);
 					}
 				}
 			}
@@ -482,24 +502,24 @@ void FactoryClass::SetEnter(Cityclass * city)
 	case 0:
 	{
 		Enter.x = Position.x;
-		Enter.y = StartCorner.y;
+		Enter.y = StartCorner.y - 20;
 		break;
 	}
 	case 1:
 	{
-		Enter.x = StartCorner.x + Size.width;
+		Enter.x = StartCorner.x + Size.width + 20;
 		Enter.y = Position.y;
 		break;
 	}
 	case 2:
 	{
 		Enter.x = Position.x;
-		Enter.y = StartCorner.y + Size.height;
+		Enter.y = StartCorner.y + Size.height + 20;
 		break;
 	}
 	case 3:
 	{
-		Enter.x = StartCorner.x;
+		Enter.x = StartCorner.x - 20;
 		Enter.y = Position.y;
 		break;
 	}

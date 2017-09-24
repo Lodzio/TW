@@ -3,7 +3,7 @@
 #include "object.h"
 
 struct pathstruct;
-struct PFindingclass;
+class PFindingclass;
 
 class UnitClass : public Object
 {

@@ -10,6 +10,15 @@ class Cityclass;
 class EmployeeClass : public UnitClass
 {
 private:
+
+	enum
+	{
+		IDLE = 0,
+		GO_FOR_PORODUCTS = 1
+	};
+
+	UINT employee_mode;
+	PFindingclass* pathmaker;
 	bool is_in_factory;
 	Wallet wallet;
 	FactoryClass* Employed;
@@ -35,6 +44,8 @@ private:
 	void add_borrower(EmployeeClass* input);
 	void Update_borrowers();
 public:
+	void CalcPosition(int timeDiff);
+	void SetPathfinder(PFindingclass* pmaker);
 	bool IsInDebt();
 	~EmployeeClass();
 	void remove_borrower(EmployeeClass* input);
@@ -56,8 +67,9 @@ public:
 	void Dead();
 	void RemoveFromFamily();
 	int MonthsWithoutJob();
-	void ExitFromFactory(FactoryClass* Fac);
+	void GoToFactory(FactoryClass* Fac);
 	bool isinfactory();
+	void ComeBackToFactory();
 };
 
 #endif

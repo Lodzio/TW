@@ -4,6 +4,7 @@
 
 class EmployeeClass;
 class Cityclass;
+class PFindingclass;
 
 class FactoryClass : public Building
 {
@@ -31,6 +32,7 @@ private:
 	bool not_enough_resources;
 	int Max_products;
 	D2D1_POINT_2F Enter;
+	int buy_products(FactoryClass* fac, int wanted);
 public:
 	~FactoryClass();
 	float GetSalary();
@@ -62,6 +64,7 @@ public:
 	void SetEnter(Cityclass* city);
 	D2D1_POINT_2F GetEnter();
 	void GiveProducts(int i);
+	void ServeEmployee(EmployeeClass* emp);
 
 	enum
 	{

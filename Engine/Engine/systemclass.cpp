@@ -232,6 +232,18 @@ bool SystemClass::Frame()
 			QuadTree.PutInObject(PlayerOneSquads[i]->GetUnit(j));
 		}
 	}
+
+	for (int i = 0; i < n_Employee; i++)
+	{
+		if (Employee_list[i]->isinfactory())
+			continue;
+		else
+		{
+			Employee_list[i]->CalcPosition((int)m_Timer->GetTime());
+			QuadTree.PutInObject(Employee_list[i]);
+		}
+	}
+
 	for (int i = 0; i < City.get_n_of_factores(); i++)
 	{
 		QuadTree.PutInObject(City.GetFactory(i));
@@ -1280,6 +1292,9 @@ void SystemClass::AddEmployee()
 	PlaceUnit(Point2F(), newWorker, 1, OBJTYPES::EMPLOYEE, NULL);
 	buffor[n_Employee] = (EmployeeClass*)newWorker;
 	buffor[n_Employee]->Init_employee();
+	buffor[n_Employee]->SetMaxSpeed(200);
+	buffor[n_Employee]->SetMaxAcceleration(500);
+	buffor[n_Employee]->SetPathfinder(&pathsys);
 	if (n_Employee)
 		delete[] Employee_list;
 	Employee_list = buffor;

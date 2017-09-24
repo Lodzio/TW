@@ -2,6 +2,7 @@
 #include "Factory.h"
 #include "Family.h"
 #include "city.h"
+#include "Pathfinding.h"
 
 void EmployeeClass::Buy()
 {
@@ -99,6 +100,31 @@ void EmployeeClass::add_borrower(EmployeeClass * input)
 		delete[] borrower;
 	borrower = buffor;
 	n_borrower++;
+}
+
+void EmployeeClass::CalcPosition(int timeDiff)
+{
+	if (!is_in_factory)
+	{
+		if (Mode.UnitMode == InClassModeClass::MODE_IDLE)
+		{
+			if (employee_mode == IDLE)
+			{
+				is_in_factory = true;
+			}
+			else if (employee_mode == GO_FOR_PORODUCTS)
+			{
+				ComeBackToFactory();
+				employee_mode = IDLE;
+			}
+		}
+		UnitClass::CalcPosition(timeDiff);
+	}
+}
+
+void EmployeeClass::SetPathfinder(PFindingclass * pmaker)
+{
+	pathmaker = pmaker;
 }
 
 bool EmployeeClass::IsInDebt()
@@ -247,6 +273,7 @@ Wallet* EmployeeClass::GetWallet()
 
 void EmployeeClass::Init_employee()
 {
+	employee_mode = IDLE;
 	Working = false;
 	Employed = 0;
 	hours_worked = false;
@@ -380,13 +407,31 @@ int EmployeeClass::MonthsWithoutJob()
 	return Workless_month;
 }
 
-void EmployeeClass::ExitFromFactory(FactoryClass * Fac)
+void EmployeeClass::GoToFactory(FactoryClass * Fac)
 {
-	Object::SetPosition(Fac->GetEnter());
+	if (!Working)
+		return;
+	D2D1_POINT_2F A, B;
+	A = Employed->GetEnter();
+	B = Fac->GetEnter();
+	Object::SetPosition(A);
+	pathstruct* newpath = pathmaker->RequestPath(A, B);
+	SetTarget(newpath);
+	employee_mode = GO_FOR_PORODUCTS;
 	is_in_factory = false;
 }
 
 bool EmployeeClass::isinfactory()
 {
 	return is_in_factory;
+}
+
+void EmployeeClass::ComeBackToFactory()
+{
+	D2D1_POINT_2F A, B;
+	A = Position;
+	B = Employed->GetEnter();
+
+	pathstruct* path = pathmaker->RequestPath(A, B);
+	SetTarget(path);
 }
