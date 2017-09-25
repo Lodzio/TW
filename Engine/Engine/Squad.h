@@ -7,7 +7,7 @@
 class SquadClass
 {
 public:
-	void SetTargetToMove(pathstruct* target);
+	void SetTargetToMove(D2D1_POINT_2F target);
 	UnitClass* GetUnit(int index);
 	void initialize(int capacity);
 	bool AddMember(UnitClass* input);

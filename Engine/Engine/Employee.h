@@ -18,7 +18,6 @@ private:
 	};
 
 	UINT employee_mode;
-	PFindingclass* pathmaker;
 	bool is_in_factory;
 	Wallet wallet;
 	FactoryClass* Employed;
@@ -45,7 +44,6 @@ private:
 	void Update_borrowers();
 public:
 	void CalcPosition(int timeDiff);
-	void SetPathfinder(PFindingclass* pmaker);
 	bool IsInDebt();
 	~EmployeeClass();
 	void remove_borrower(EmployeeClass* input);

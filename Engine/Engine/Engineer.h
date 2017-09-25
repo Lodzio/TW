@@ -7,7 +7,7 @@ class EngineerClass : public UnitClass
 {
 public:
 	EngineerClass();
-	void RepairTarget(Building* input);
+	void RepairTarget(Building * input, D2D1_POINT_2F place);
 };
 
 #endif

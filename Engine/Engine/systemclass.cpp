@@ -438,15 +438,11 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 					{
 						if (m_Graphics->Mode.Unit == OBJTYPES::ENGINEERS || m_Graphics->Mode.Unit == OBJTYPES::SOLDIER)
 						{
-							pathstruct* input = pathsys.RequestPath(((SquadClass*)Selected)->GetPosition(), Global);
-							((SquadClass*)Selected)->SetTargetToMove(input);
+							((SquadClass*)Selected)->SetTargetToMove(Global);
 						}
 						else if (m_Graphics->Mode.Unit == OBJTYPES::COMMANDER)
 						{
-							Graphinput.path = pathsys.RequestPath(((CommanderClass*)Selected)->GetPosition(), Global);
-							pathstruct* input = new pathstruct;
-							*input = *Graphinput.path;
-							((CommanderClass*)Selected)->SetTarget(input);
+							((CommanderClass*)Selected)->SetTarget(Global);
 						}
 						else if (m_Graphics->Mode.Unit == OBJTYPES::COMMANDCENTER)
 						{
@@ -651,6 +647,7 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		Obj->initialize(index, Pos, 0, siz, scale, 100, 100, rc, Point2F(0.5, 0.5), OBJTYPES::UNIT);
 		((UnitClass*)Obj)->SetUnitType(unitType);
 		((UnitClass*)Obj)->SetFractions(Fraction);
+		((UnitClass*)Obj)->SetPathfinder(&pathsys);
 	}
 	else if (unitType == OBJTYPES::ENGINEERS)
 	{
@@ -666,6 +663,7 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		Obj->initialize(index, Pos, 0, siz, scale, 100, 100, rc, Point2F(0.5, 0.5), OBJTYPES::UNIT);
 		((UnitClass*)Obj)->SetUnitType(unitType);
 		((UnitClass*)Obj)->SetFractions(Fraction);
+		((UnitClass*)Obj)->SetPathfinder(&pathsys);
 	}
 	else if (unitType == OBJTYPES::COMMANDER)
 	{
@@ -681,6 +679,7 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		Obj->initialize(index, Pos, 0, siz, scale, 100, 100, rc, Point2F(0.5, 0.5), OBJTYPES::UNIT);
 		((UnitClass*)Obj)->SetUnitType(unitType);
 		((UnitClass*)Obj)->SetFractions(Fraction);
+		((UnitClass*)Obj)->SetPathfinder(&pathsys);
 	}
 	else if (unitType == OBJTYPES::EMPLOYEE)
 	{
@@ -696,6 +695,7 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		Obj->initialize(index, Pos, 0, siz, scale, 100, 100, rc, Point2F(0.5, 0.5), OBJTYPES::UNIT);
 		((UnitClass*)Obj)->SetUnitType(unitType);
 		((UnitClass*)Obj)->SetFractions(Fraction);
+		((UnitClass*)Obj)->SetPathfinder(&pathsys);
 		//City.AddEmployee((EmployeeClass*)Obj);
 	}
 	else if (unitType == OBJTYPES::COMMANDCENTER)
@@ -716,6 +716,7 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		Obj = new ComCenter;
 		Obj->initialize(index, Pos, 0, siz, scale, 1, 1000, rc, Point2F(0.5, 0.5), OBJTYPES::BUILDING);
 		Obj->SetFractions(Fraction);
+		pathsys.AddBuilding((Building*)Obj);
 	}
 	else if (unitType == OBJTYPES::FACTORY)
 	{
@@ -787,7 +788,7 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		}
 
 		City.AddFactory((FactoryClass*)Obj, Point2L((LONG)Pos.x, (LONG)Pos.y));
-		pathsys.AddBuilding((FactoryClass*)Obj);
+		pathsys.AddBuilding((Building*)Obj);
 	}
 
 	Add_to_list_to_render(Obj);
@@ -927,8 +928,7 @@ void SystemClass::CreateNewSquad(UINT SquadType, UINT Fraction)
 			SquadBuf->AddMember(UnitBuf);
 		}
 		Buffor[PlayerOneSquadAmmount] = SquadBuf;
-		pathstruct* input = pathsys.RequestPath(SquadBuf->GetPosition(), ((Object*)Selected)->GetPosition());
-		Buffor[PlayerOneSquadAmmount]->SetTargetToMove(input);
+		Buffor[PlayerOneSquadAmmount]->SetTargetToMove(((Object*)Selected)->GetPosition());
 	}
 	if (PlayerOneSquads)
 	{
@@ -1294,7 +1294,6 @@ void SystemClass::AddEmployee()
 	buffor[n_Employee]->Init_employee();
 	buffor[n_Employee]->SetMaxSpeed(200);
 	buffor[n_Employee]->SetMaxAcceleration(500);
-	buffor[n_Employee]->SetPathfinder(&pathsys);
 	if (n_Employee)
 		delete[] Employee_list;
 	Employee_list = buffor;

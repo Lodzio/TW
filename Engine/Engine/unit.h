@@ -21,7 +21,7 @@ protected:
 	};
 public:
 	UnitClass();
-	void SetTarget(pathstruct* Target);
+	void SetTarget(D2D1_POINT_2F tar);
 	float MaxAcceleration;
 	void SetMaxAcceleration(float input);
 	void SetMaxSpeed(float input);
@@ -31,7 +31,9 @@ public:
 	D2D1_POINT_2F GetVector();
 	void SetUnitType(UINT input);
 	void SetPosition(D2D1_POINT_2F Input);
+	void SetPathfinder(PFindingclass* pmaker);
 protected:
+	PFindingclass* pathmaker;
 	InClassModeClass Mode;
 	D2D1_POINT_2F speed;
 	float MaxSpeed;

@@ -11,9 +11,9 @@ UnitClass::UnitClass()
 	Range_Of_Object = 40;
 }
 
-void UnitClass::SetTarget(pathstruct* input)
+void UnitClass::SetTarget(D2D1_POINT_2F tar)
 {
-	Path = input;
+	Path = pathmaker->RequestPath(Position, tar);
 	Target = Path->GetPoint();
 	Mode.UnitMode = Mode.MODE_MOVING;
 }
@@ -40,13 +40,14 @@ void UnitClass::CalcPosition(int timeDiff)
 		Subtract_Pos.x = Target.x - Position.x;
 		Subtract_Pos.y = Target.y - Position.y;
 		double subrot = atan2(Subtract_Pos.y, Subtract_Pos.x);
+		//double subrot = atan2(speed.y, speed.x);
 		Rotation = (int)(subrot * 180 / 3.14159265358979323846);
 		double distance = sqrt(pow(Subtract_Pos.x, 2) + pow(Subtract_Pos.y, 2));
 		D2D1_POINT_2F SpeedNeeded;
 
 		if (distance < 2 * Size.height)
 		{
-			if (distance < Size.height / 3.0)
+			if (distance < Size.height / 3.0 && Mode.UnitMode != Mode.MODE_REPARING)
 			{
 				SpeedNeeded.x = 0;
 				SpeedNeeded.y = 0;
@@ -92,6 +93,30 @@ void UnitClass::CalcPosition(int timeDiff)
 			rc.top = Mode.OBJTarget->GetStartCorner().y;
 			rc.right = Mode.OBJTarget->GetStartCorner().x + Mode.OBJTarget->GetSize().width;
 			rc.bottom = Mode.OBJTarget->GetStartCorner().y + Mode.OBJTarget->GetSize().height;
+			
+			if (distance < Size.height / 10.0)
+			{
+				acceleration.x = 0;
+				acceleration.y = 0;
+				resistance.y = 0;
+				resistance.x = 0;
+				speed.x = 0;
+				speed.y = 0;
+				D2D1_POINT_2F sub_from_building;
+				sub_from_building.x = Mode.OBJTarget->GetPosition().x - Position.x;
+				sub_from_building.y = Mode.OBJTarget->GetPosition().y - Position.y;
+				double subrot = atan2(sub_from_building.y, sub_from_building.x);
+				Rotation = (int)(subrot * 180 / 3.14159265358979323846);
+				Mode.OBJTarget->Health += 10 * timeDiff / 1000.0f;
+				if (Mode.OBJTarget->Health > Mode.OBJTarget->GetMaxHealth())
+				{
+					Mode.OBJTarget->Health = Mode.OBJTarget->GetMaxHealth();
+					Mode.UnitMode = Mode.MODE_IDLE;
+					Mode.OBJTarget = 0;
+				}
+			}
+
+			/*
 			if (Position.x < rc.right && Position.x > rc.left)
 			{
 				acceleration.x = 0;
@@ -132,6 +157,7 @@ void UnitClass::CalcPosition(int timeDiff)
 					}
 				}
 			}
+			*/
 		}
 
 		speed.x += acceleration.x * timeDiff / 1000.0f;
@@ -212,4 +238,9 @@ void UnitClass::SetPosition(D2D1_POINT_2F Input)
 	if (Position.y == Input.y)
 		speed.x = 0;
 	Position = Input;
+}
+
+void UnitClass::SetPathfinder(PFindingclass * pmaker)
+{
+	pathmaker = pmaker;
 }

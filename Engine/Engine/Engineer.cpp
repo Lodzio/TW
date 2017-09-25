@@ -5,9 +5,9 @@ EngineerClass::EngineerClass()
 	UnitType == OBJTYPES::ENGINEERS;
 }
 
-void EngineerClass::RepairTarget(Building * input)
+void EngineerClass::RepairTarget(Building * input, D2D1_POINT_2F place)
 {
-	Target = input->GetPosition();
+	SetTarget(place);
 	Mode.OBJTarget = input;
 	Mode.UnitMode = Mode.MODE_REPARING;
 }

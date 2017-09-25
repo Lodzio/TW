@@ -122,11 +122,6 @@ void EmployeeClass::CalcPosition(int timeDiff)
 	}
 }
 
-void EmployeeClass::SetPathfinder(PFindingclass * pmaker)
-{
-	pathmaker = pmaker;
-}
-
 bool EmployeeClass::IsInDebt()
 {
 	if (n_borrower)
@@ -415,8 +410,7 @@ void EmployeeClass::GoToFactory(FactoryClass * Fac)
 	A = Employed->GetEnter();
 	B = Fac->GetEnter();
 	Object::SetPosition(A);
-	pathstruct* newpath = pathmaker->RequestPath(A, B);
-	SetTarget(newpath);
+	SetTarget(B);
 	employee_mode = GO_FOR_PORODUCTS;
 	is_in_factory = false;
 }
@@ -428,10 +422,8 @@ bool EmployeeClass::isinfactory()
 
 void EmployeeClass::ComeBackToFactory()
 {
-	D2D1_POINT_2F A, B;
-	A = Position;
+	D2D1_POINT_2F B;
 	B = Employed->GetEnter();
 
-	pathstruct* path = pathmaker->RequestPath(A, B);
-	SetTarget(path);
+	SetTarget(B);
 }

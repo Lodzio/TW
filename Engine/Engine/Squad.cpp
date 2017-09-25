@@ -1,12 +1,15 @@
 #include "Squad.h"
+#include "Pathfinding.h"
 
-void SquadClass::SetTargetToMove(pathstruct* target)
+#define PLACE_FOR_ENGENEERS 60
+
+void SquadClass::SetTargetToMove(D2D1_POINT_2F target)
 {
 	int MaxRange = 250;
 
 	for (int i = 0; i < Members; i++)
 	{
-		/*if (MembersList[i] == 0)
+		if (MembersList[i] == 0)
 		{
 			continue;
 		}
@@ -15,8 +18,8 @@ void SquadClass::SetTargetToMove(pathstruct* target)
 		float X = (float)(MaxRange * 2 * (Xrand / 100.0) - MaxRange);
 		MaxRange = (int)sqrt(pow(MaxRange, 2) - pow(X, 2));
 		X += target.x;
-		float Y = (float)((MaxRange * 2 * (Yrand / 100.0) - MaxRange) + target.y);*/
-		MembersList[i]->SetTarget(target);
+		float Y = (float)((MaxRange * 2 * (Yrand / 100.0) - MaxRange) + target.y);
+		MembersList[i]->SetTarget(Point2F(X, Y));
 	}
 }
 
@@ -75,11 +78,64 @@ void SquadClass::Select(bool whatselect)
 
 void SquadClass::SetTargetToRepair(Object * input)
 {
+	D2D1_SIZE_F BuildSize = input->GetSize();
+	int places = 0;
+	bool* place = 0;
+	places += BuildSize.height / PLACE_FOR_ENGENEERS;
+	places += BuildSize.width / PLACE_FOR_ENGENEERS;
+	places *= 2;
+	place = new bool[places];
+	for (int i = 0; i < places; i++)
+		place[i] = false;
+
 	if (MembersList[0]->GetUnitType() == OBJTYPES::ENGINEERS)
 	{
 		for (int i = 0; i < Members; i++)
 		{
-			((EngineerClass*)MembersList[i])->RepairTarget((Building*)input);
+			int submiejsce;
+			do
+			{
+				submiejsce = rand() % places;
+			} while (place[submiejsce] == true);
+			place[submiejsce] = true;
+			D2D1_POINT_2F Point = ((Building*)input)->GetStartCorner();
+
+			if (submiejsce < BuildSize.width / PLACE_FOR_ENGENEERS)
+			{
+				Point.x += submiejsce * PLACE_FOR_ENGENEERS;
+				Point.x += ((int)BuildSize.width % PLACE_FOR_ENGENEERS) / 2;
+				Point.x += PLACE_FOR_ENGENEERS;
+			}
+			else
+			{
+				submiejsce -= BuildSize.width / PLACE_FOR_ENGENEERS;
+				if (submiejsce < BuildSize.height / PLACE_FOR_ENGENEERS)
+				{
+					Point.x += BuildSize.width;
+					Point.y += submiejsce * PLACE_FOR_ENGENEERS;
+					Point.y += ((int)BuildSize.height % PLACE_FOR_ENGENEERS) / 2;
+					Point.y += PLACE_FOR_ENGENEERS / 2;
+				}
+				else
+				{
+					submiejsce -= BuildSize.height / PLACE_FOR_ENGENEERS;
+					if (submiejsce < BuildSize.width / PLACE_FOR_ENGENEERS)
+					{
+						Point.x += BuildSize.width / PLACE_FOR_ENGENEERS;
+						Point.x += ((int)BuildSize.width % PLACE_FOR_ENGENEERS) / 2;
+						Point.x += PLACE_FOR_ENGENEERS / 2;
+						Point.y += BuildSize.height;
+					}
+					else
+					{
+						submiejsce -= BuildSize.width / PLACE_FOR_ENGENEERS;
+						Point.y += submiejsce * PLACE_FOR_ENGENEERS;
+						Point.y += ((int)BuildSize.height % PLACE_FOR_ENGENEERS) / 2;
+						Point.y += PLACE_FOR_ENGENEERS / 2;
+					}
+				}
+			}
+			((EngineerClass*)MembersList[i])->RepairTarget((Building*)input, Point);
 		}
 		
 	}

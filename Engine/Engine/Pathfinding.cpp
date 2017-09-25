@@ -70,9 +70,9 @@ bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
 				else
 					continue;
 
-				if (geocheck[j].y >= y && geocheck[j + 1].y <= y)
+				if (geocheck[j].y > y && geocheck[j + 1].y < y)
 					return true;
-				if (geocheck[j].y <= y && geocheck[j + 1].y >= y)
+				if (geocheck[j].y < y && geocheck[j + 1].y > y)
 					return true;
 			}
 			else if (geocheck[j].y == geocheck[j + 1].y)
@@ -87,9 +87,9 @@ bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
 				else
 					continue;
 
-				if (geocheck[j].x >= x && geocheck[j + 1].x <= x)
+				if (geocheck[j].x > x && geocheck[j + 1].x < x)
 					return true;
-				if (geocheck[j].x <= x && geocheck[j + 1].x >= x)
+				if (geocheck[j].x < x && geocheck[j + 1].x > x)
 					return true;
 			}
 		}
