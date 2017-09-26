@@ -53,6 +53,7 @@ private:
 	bool PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT unitType, UINT Fraction, UINT FactoryType = NULL, EmployeeClass* own = 0);
 	void LeftButtonPressed(D2D1_POINT_2U MousePos);
 	void CreateNewSquad(UINT SquadType, UINT Fraction);
+	void Place_supply_stack(D2D1_POINT_2F point);
 
 private:
 	D2D1_POINT_2F MouseClickPos;
@@ -98,6 +99,8 @@ private:
 
 	void Add_Factory_to_sublist(FactoryClass* input);
 	void Remove_Factory_from_sublist(FactoryClass* input);
+
+	void Add_supply_to_list(Supply_stack* supply);
 
 	FactoryClass** Shops_list;
 	int n_Shops;

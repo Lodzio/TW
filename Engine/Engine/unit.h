@@ -1,6 +1,8 @@
 #ifndef  _UNITCLASS_H_
 #define _UNITCLASS_H_
+#define MAX_WEIGHT 50
 #include "object.h"
+#include "InventoryObjects.h"
 
 struct pathstruct;
 class PFindingclass;
@@ -25,7 +27,7 @@ public:
 	float MaxAcceleration;
 	void SetMaxAcceleration(float input);
 	void SetMaxSpeed(float input);
-	void CalcPosition(int timeDiff);
+	virtual void CalcPosition(int timeDiff);
 	void CalcCollide(Object* SecondObj);
 	void Draw(ID2D1RenderTarget* RenderTarget, ID2D1SolidColorBrush* Brush);
 	D2D1_POINT_2F GetVector();
@@ -33,6 +35,8 @@ public:
 	void SetPosition(D2D1_POINT_2F Input);
 	void SetPathfinder(PFindingclass* pmaker);
 protected:
+	double AccWeight;
+	InvObject* Inventory[256];
 	PFindingclass* pathmaker;
 	InClassModeClass Mode;
 	D2D1_POINT_2F speed;

@@ -51,7 +51,37 @@ void Building::Collide(Object * input)
 	}
 }
 
+int Building::give_supplies(int in)
+{
+	int neededsup = req_supplies - act_supplies;
+	if (in > neededsup)
+	{
+		act_supplies = req_supplies;
+		Health = MaxHealth;
+		in -= neededsup;
+	}
+	else
+	{
+		req_supplies += in;
+		Health = ((float)act_supplies / req_supplies) * MaxHealth;
+		in = 0;
+	}
+	return in;
+}
+
 Building::Building()
 {
+	supplies_in_way = 0;
+	act_supplies = 0;
 	Movable = false;
+}
+
+void Building::Changecarring(int i)
+{
+	supplies_in_way += i;
+}
+
+int Building::How_many_supplies_needed()
+{
+	return req_supplies - act_supplies - supplies_in_way;
 }

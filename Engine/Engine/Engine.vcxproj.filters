@@ -87,6 +87,12 @@
     <ClCompile Include="Pathfinding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InventoryObjects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Supplies.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphicsclass.h">
@@ -150,6 +156,12 @@
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Pathfinding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supplies.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="InventoryObjects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

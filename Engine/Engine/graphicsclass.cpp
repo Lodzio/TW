@@ -648,7 +648,7 @@ void GraphicsClass::DrawObject(Object* input)
 		{
 			m_Direct2D->GetRenderTarget()->FillRectangle(rcmaxhealth, BlackBrush);
 			rchealth = rcmaxhealth;
-			double percentofhealth = input->Health / input->GetMaxHealth();
+			double percentofhealth = input->GetHealth() / input->GetMaxHealth();
 			rchealth.right = (float)((input->GetSize().width * percentofhealth) + input->GetStartCorner().x);
 			m_Direct2D->GetRenderTarget()->FillRectangle(rchealth, GreenBrush);
 		}

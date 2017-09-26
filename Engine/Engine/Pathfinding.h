@@ -25,6 +25,7 @@ public:
 	void Draw_streets(ID2D1RenderTarget* target, ID2D1Brush* brush);
 	pathstruct operator= (pathstruct input);
 	pathstruct();
+	double GetRange();
 private:
 
 	struct stack

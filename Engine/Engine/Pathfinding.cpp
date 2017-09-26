@@ -640,6 +640,11 @@ pathstruct::pathstruct()
 	range = 0;
 }
 
+double pathstruct::GetRange()
+{
+	return range;
+}
+
 void pathstruct::delete_all()
 {
 	while (last_path)

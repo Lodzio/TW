@@ -38,13 +38,14 @@ public:
 	D2D1_SIZE_F GetSize();
 	D2D1_SIZE_F GetScale();
 	int GetMaxHealth();
+	double GetHealth();
 	bool Selected;
 	bool IsMovable();
-	double Health;
 	UINT GetUnitType();
 	void SetFractions(UINT input);
 	UINT GetFraction();
 protected:
+	double Health;
 	int MaxHealth;
 	int index;
 	D2D1_POINT_2F StartCorner;

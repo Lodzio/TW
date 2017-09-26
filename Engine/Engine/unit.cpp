@@ -3,12 +3,15 @@
 
 UnitClass::UnitClass()
 {
+	AccWeight = 0;
 	speed.x = 0;
 	speed.y = 0;
 	resistance.x = 0;
 	resistance.y = 0;
 	Mode.UnitMode = Mode.MODE_IDLE;
 	Range_Of_Object = 40;
+	for (int i = 0; i < 256; i++)
+		Inventory[i] = 0;
 }
 
 void UnitClass::SetTarget(D2D1_POINT_2F tar)
@@ -40,26 +43,22 @@ void UnitClass::CalcPosition(int timeDiff)
 		Subtract_Pos.x = Target.x - Position.x;
 		Subtract_Pos.y = Target.y - Position.y;
 		double subrot = atan2(Subtract_Pos.y, Subtract_Pos.x);
-		//double subrot = atan2(speed.y, speed.x);
 		Rotation = (int)(subrot * 180 / 3.14159265358979323846);
 		double distance = sqrt(pow(Subtract_Pos.x, 2) + pow(Subtract_Pos.y, 2));
 		D2D1_POINT_2F SpeedNeeded;
 
 		if (distance < 2 * Size.height)
 		{
-			if (distance < Size.height / 3.0 && Mode.UnitMode != Mode.MODE_REPARING)
+			if (distance < Size.height / 3.0)
 			{
+				Target = Path->GetPoint();
 				SpeedNeeded.x = 0;
 				SpeedNeeded.y = 0;
-				if (Mode.UnitMode != Mode.MODE_REPARING)
+				if (Target.x == -1 && Target.y == -1 && Mode.UnitMode == Mode.MODE_MOVING)
 				{
-					Target = Path->GetPoint();
-					if (Target.x == -1 && Target.y == -1)
-					{
-						Mode.UnitMode = false;
-						delete Path;
-						Path = 0;
-					}
+					Mode.UnitMode = false;
+					delete Path;
+					Path = 0;
 				}
 			}
 			else if (Path->isempty())
@@ -85,80 +84,6 @@ void UnitClass::CalcPosition(int timeDiff)
 		double SpeedToCorrect_Sum = sqrt(pow(SpeedToCorrect.x, 2) + pow(SpeedToCorrect.y, 2));
 		acceleration.x = (float)(SpeedToCorrect.x * MaxAcceleration / SpeedToCorrect_Sum);
 		acceleration.y = (float)(SpeedToCorrect.y * MaxAcceleration / SpeedToCorrect_Sum);
-
-		if (Mode.UnitMode == Mode.MODE_REPARING)
-		{
-			D2D1_RECT_F rc;
-			rc.left = Mode.OBJTarget->GetStartCorner().x;
-			rc.top = Mode.OBJTarget->GetStartCorner().y;
-			rc.right = Mode.OBJTarget->GetStartCorner().x + Mode.OBJTarget->GetSize().width;
-			rc.bottom = Mode.OBJTarget->GetStartCorner().y + Mode.OBJTarget->GetSize().height;
-			
-			if (distance < Size.height / 10.0)
-			{
-				acceleration.x = 0;
-				acceleration.y = 0;
-				resistance.y = 0;
-				resistance.x = 0;
-				speed.x = 0;
-				speed.y = 0;
-				D2D1_POINT_2F sub_from_building;
-				sub_from_building.x = Mode.OBJTarget->GetPosition().x - Position.x;
-				sub_from_building.y = Mode.OBJTarget->GetPosition().y - Position.y;
-				double subrot = atan2(sub_from_building.y, sub_from_building.x);
-				Rotation = (int)(subrot * 180 / 3.14159265358979323846);
-				Mode.OBJTarget->Health += 10 * timeDiff / 1000.0f;
-				if (Mode.OBJTarget->Health > Mode.OBJTarget->GetMaxHealth())
-				{
-					Mode.OBJTarget->Health = Mode.OBJTarget->GetMaxHealth();
-					Mode.UnitMode = Mode.MODE_IDLE;
-					Mode.OBJTarget = 0;
-				}
-			}
-
-			/*
-			if (Position.x < rc.right && Position.x > rc.left)
-			{
-				acceleration.x = 0;
-				resistance.y = 0;
-				if (Position.y == rc.top || Position.y == rc.bottom)
-				{
-					acceleration.y = 0;
-					speed.x = 0;
-					speed.y = 0;
-					double subrot = atan2(Subtract_Pos.y, 0);
-					Rotation = (int)(subrot * 180 / 3.14159265358979323846);
-					Mode.OBJTarget->Health += 10 * timeDiff / 1000.0f;
-					if (Mode.OBJTarget->Health > Mode.OBJTarget->GetMaxHealth())
-					{
-						Mode.OBJTarget->Health = Mode.OBJTarget->GetMaxHealth();
-						Mode.UnitMode = Mode.MODE_IDLE;
-						Mode.OBJTarget = 0;
-					}
-				}
-			}
-			else if (Position.y < rc.bottom && Position.y > rc.top)
-			{
-				acceleration.y = 0;
-				resistance.x = 0;
-				if (Position.x == rc.left || Position.x == rc.right)
-				{
-					acceleration.x = 0;
-					speed.x = 0;
-					speed.y = 0;
-					double subrot = atan2(0, Subtract_Pos.x);
-					Rotation = (int)(subrot * 180 / 3.14159265358979323846);
-					Mode.OBJTarget->Health += 10 * timeDiff / 1000.0;
-					if (Mode.OBJTarget->Health > Mode.OBJTarget->GetMaxHealth())
-					{
-						Mode.OBJTarget->Health = Mode.OBJTarget->GetMaxHealth();
-						Mode.UnitMode = Mode.MODE_IDLE;
-						Mode.OBJTarget = 0;
-					}
-				}
-			}
-			*/
-		}
 
 		speed.x += acceleration.x * timeDiff / 1000.0f;
 		speed.y += acceleration.y * timeDiff / 1000.0f;

@@ -76,6 +76,11 @@ int Object::GetMaxHealth()
 	return MaxHealth;
 }
 
+double Object::GetHealth()
+{
+	return Health;
+}
+
 bool Object::IsMovable()
 {
 	return Movable;

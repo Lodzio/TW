@@ -152,6 +152,7 @@
     <ClCompile Include="Factory.cpp" />
     <ClCompile Include="Family.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
+    <ClCompile Include="InventoryObjects.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="inputclass.cpp" />
     <ClCompile Include="main.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="Soldier.cpp" />
     <ClCompile Include="Sparks.cpp" />
     <ClCompile Include="Squad.cpp" />
+    <ClCompile Include="Supplies.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="timerclass.cpp" />
     <ClCompile Include="unit.cpp" />
@@ -175,6 +177,7 @@
     <ClInclude Include="Factory.h" />
     <ClInclude Include="Family.h" />
     <ClInclude Include="graphicsclass.h" />
+    <ClInclude Include="InventoryObjects.h" />
     <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="building.h" />
@@ -183,6 +186,7 @@
     <ClInclude Include="Soldier.h" />
     <ClInclude Include="Sparks.h" />
     <ClInclude Include="Squad.h" />
+    <ClInclude Include="Supplies.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="timerclass.h" />
     <ClInclude Include="unit.h" />

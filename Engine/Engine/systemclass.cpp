@@ -100,7 +100,6 @@ bool SystemClass::Initialize()
 	Object* Buffor;
 	PlaceUnit(Point2F(1600, 1600), Buffor, 1, OBJTYPES::COMMANDER, Fractions::GUERILLA);
 	Commander = (CommanderClass*)Buffor;
-	Commander->SetFractions(Fractions::GUERILLA);
 	Commander->SetMaxSpeed(200);
 	Commander->SetMaxAcceleration(500);
 
