@@ -8,7 +8,7 @@ class PFindingclass;
 
 class FactoryClass : public Building
 {
-private:
+protected:
 	UINT Output_object_type;
 	UINT Input_object_type;
 	UINT FactoryType;
@@ -27,6 +27,7 @@ private:
 	float Margin;
 	int n_workers;
 	int wanted_workers;
+	int max_workers;
 	EmployeeClass** Workers;
 	int Prod_in_progress;
 	bool not_enough_resources;
@@ -42,8 +43,8 @@ public:
 	void SetIndex(D2D1_POINT_2L input);
 	int SellProducts(int ammount);
 	void Init_factory(UINT outObj, UINT inObj, int proddelay, EmployeeClass* own, UINT typ_fact, float salary, Cityclass* city, D2D1_POINT_2L index = Point2L());
-	void Update(int input);
-	void EndOfMonth(float smallest_sallary);
+	virtual void Update(int input);
+	virtual void EndOfMonth(float smallest_sallary);
 	UINT GetOutputProductsinfo();
 	UINT GetInputProductsinfo();
 	UINT GetFactoryType();
@@ -74,7 +75,10 @@ public:
 		Bread = 3,
 		Iron_ore = 4,
 		Steel = 5,
-		cutlery = 6
+		cutlery = 6,
+		concrete = 7,
+		cement = 8
+
 	};
 
 	enum factory_type

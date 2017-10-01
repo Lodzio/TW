@@ -37,6 +37,8 @@ SystemClass::SystemClass()
 	CityCenter = Point2L(4000, 3000);
 	cost_of_life = 300;
 	Graphinput.path = 0;
+	n_Supplies = 0;
+	Supplies_list = 0;
 }
 
 
@@ -97,6 +99,7 @@ bool SystemClass::Initialize()
 	}
 	Player_Fraction = Fractions::FIRSTARMY;
 	CreateNewSquad(OBJTYPES::ENGINEERS, Player_Fraction);
+	Place_supply_stack(Point2F(200, 200));
 	Object* Buffor;
 	PlaceUnit(Point2F(1600, 1600), Buffor, 1, OBJTYPES::COMMANDER, Fractions::GUERILLA);
 	Commander = (CommanderClass*)Buffor;
@@ -663,6 +666,7 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		((UnitClass*)Obj)->SetUnitType(unitType);
 		((UnitClass*)Obj)->SetFractions(Fraction);
 		((UnitClass*)Obj)->SetPathfinder(&pathsys);
+		((EngineerClass*)Obj)->SetSuppliesList(&Supplies_list, &n_Supplies);
 	}
 	else if (unitType == OBJTYPES::COMMANDER)
 	{
@@ -716,6 +720,25 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		Obj->initialize(index, Pos, 0, siz, scale, 1, 1000, rc, Point2F(0.5, 0.5), OBJTYPES::BUILDING);
 		Obj->SetFractions(Fraction);
 		pathsys.AddBuilding((Building*)Obj);
+	}
+	else if (unitType == OBJTYPES::SUPPLY_STACK)
+	{
+		Pos.x -= (int)Pos.x % 20;
+		Pos.y -= (int)Pos.y % 20;
+
+		rc.bottom = 100;
+		rc.left = 0;
+		rc.right = 200;
+		rc.top = 0;
+
+		siz.height = (float)(0.2 * (Screen.bottom - Screen.top));
+		siz.width = (float)(0.4 * (Screen.bottom - Screen.top));
+		scale.height = (float)((0.2 * (Screen.bottom - Screen.top)) / 100);
+		scale.width = (float)((0.4 * (Screen.bottom - Screen.top)) / 200);
+
+		Obj = new Supply_stack;
+		Obj->initialize(index, Pos, 0, siz, scale, 1, 1000, rc, Point2F(0.5, 0.5), OBJTYPES::BUILDING);
+		Obj->SetFractions(Fraction);
 	}
 	else if (unitType == OBJTYPES::FACTORY)
 	{
@@ -935,6 +958,14 @@ void SystemClass::CreateNewSquad(UINT SquadType, UINT Fraction)
 	}
 	PlayerOneSquadAmmount++;
 	PlayerOneSquads = Buffor;
+}
+
+void SystemClass::Place_supply_stack(D2D1_POINT_2F point)
+{
+	Object* Buffor;
+	PlaceUnit(point, Buffor, 1, OBJTYPES::SUPPLY_STACK, Fractions::FIRSTARMY);
+	((Supply_stack*)Buffor)->init_supply(3000);
+	Add_supply_to_list((Supply_stack*)Buffor);
 }
 
 void SystemClass::Add_to_list_to_render(Object * input)
@@ -1277,6 +1308,20 @@ void SystemClass::Remove_Factory_from_sublist(FactoryClass * input)
 	*list = buffor;
 	(*add_element)--;
 	n_Shops = n_Workshop + n_Bakery;
+}
+
+void SystemClass::Add_supply_to_list(Supply_stack * supply)
+{
+	Supply_stack** New_array = new Supply_stack*[n_Supplies + 1];
+
+	for (int i = 0; i < n_Supplies; i++)
+	{
+		New_array[i] = Supplies_list[i];
+	}
+	New_array[n_Supplies] = supply;
+	delete [] Supplies_list;
+	Supplies_list = New_array;
+	n_Supplies++;
 }
 
 void SystemClass::AddEmployee()

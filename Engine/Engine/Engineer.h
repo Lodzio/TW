@@ -7,7 +7,7 @@
 class EngineerClass : public UnitClass
 {
 private:
-	Supply_stack** supplieslist;
+	Supply_stack*** supplieslist;
 	int* n_supplies;
 	UINT Engineer_status;
 	InvObject** supply;
@@ -25,7 +25,7 @@ public:
 	void CalcPosition(int timeDiff);
 	EngineerClass();
 	void RepairTarget(Building * input, D2D1_POINT_2F place);
-	void SetSuppliesList(Supply_stack** supp, int* nsupply);
+	void SetSuppliesList(Supply_stack*** supp, int* nsupply);
 };
 
 #endif

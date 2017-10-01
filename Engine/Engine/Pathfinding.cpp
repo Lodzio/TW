@@ -56,9 +56,15 @@ bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
 	for (int i = 0; i < n_geom; i++)
 	{
 		D2D1_POINT_2F* geocheck = geom[i].vex;
-		for (int j = 0; j < geom[i].n_vex - 1; j++)
+		for (int j = 0; j < geom[i].n_vex; j++)
 		{
-			if (geocheck[j].x == geocheck[j + 1].x)
+			D2D1_POINT_2F next;
+			if (j + 1 < geom[i].n_vex)
+				next = geocheck[j + 1];
+			else
+				next = geocheck[0];
+
+			if (geocheck[j].x == next.x)
 			{
 				double k = (geocheck[j].x - first.x) / vec.x;
 				if (k <= 0 || k >= 1)
@@ -70,12 +76,12 @@ bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
 				else
 					continue;
 
-				if (geocheck[j].y > y && geocheck[j + 1].y < y)
+				if (geocheck[j].y > y && next.y < y)
 					return true;
-				if (geocheck[j].y < y && geocheck[j + 1].y > y)
+				if (geocheck[j].y < y && next.y > y)
 					return true;
 			}
-			else if (geocheck[j].y == geocheck[j + 1].y)
+			else if (geocheck[j].y == next.y)
 			{
 				double k = (geocheck[j].y - first.y) / vec.y;
 				if (k <= 0 || k >= 1)
@@ -87,9 +93,9 @@ bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
 				else
 					continue;
 
-				if (geocheck[j].x > x && geocheck[j + 1].x < x)
+				if (geocheck[j].x > x && next.x < x)
 					return true;
-				if (geocheck[j].x < x && geocheck[j + 1].x > x)
+				if (geocheck[j].x < x && next.x > x)
 					return true;
 			}
 		}

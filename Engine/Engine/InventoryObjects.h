@@ -3,6 +3,7 @@
 #include <d2d1.h>
 
 #define SUPPLY_WEIGHT 5
+#define CONCRETE_WEIGHT 5
 #define WEAPON_WEIGHT 15
 
 //extern class UINT;
@@ -12,7 +13,8 @@ struct InvObject
 	enum
 	{
 		WEAPON = 0,
-		SUPPLY = 1
+		SUPPLY = 1,
+		CONCRETE = 2
 	};
 
 	int type;
@@ -45,6 +47,15 @@ struct Supply : public InvObject
 		WEIGHT = SUPPLY_WEIGHT
 	};
 	Supply();
+};
+
+struct Concrete : public InvObject
+{
+	enum
+	{
+		WEIGHT = CONCRETE_WEIGHT
+	};
+	Concrete();
 };
 
 #endif

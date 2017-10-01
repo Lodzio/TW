@@ -101,6 +101,8 @@ private:
 	void Remove_Factory_from_sublist(FactoryClass* input);
 
 	void Add_supply_to_list(Supply_stack* supply);
+	Supply_stack** Supplies_list;
+	int n_Supplies;
 
 	FactoryClass** Shops_list;
 	int n_Shops;

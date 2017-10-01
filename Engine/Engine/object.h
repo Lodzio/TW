@@ -16,7 +16,8 @@ enum OBJTYPES
 	ENGINEERS = 5,
 	COMMANDER = 6,
 	FACTORY = 7,
-	EMPLOYEE = 8
+	EMPLOYEE = 8,
+	SUPPLY_STACK = 9
 };
 
 enum Fractions

@@ -24,3 +24,9 @@ Supply::Supply()
 	type = SUPPLY;
 	weight = WEIGHT;
 }
+
+Concrete::Concrete()
+{
+	type = CONCRETE;
+	weight = WEIGHT;
+}

@@ -24,6 +24,7 @@ void FactoryClass::Init_factory(UINT outObj, UINT inObj, int proddelay, Employee
 	OldProducedProd = 0;
 	n_workers = 0;
 	wanted_workers = 1;
+	max_workers = 1;
 	Prod_in_progress = 0;
 	FactoryType = typ_fact;
 	not_enough_resources = false;
@@ -299,7 +300,10 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 	{
 		Margin += 0.01;
 		if ((Margin > 1.2 || !n_workers) && !not_enough_resources && !IsLookingForEmployee())
-			wanted_workers++;
+		{
+			if (max_workers < wanted_workers)
+				wanted_workers++;
+		}
 	}
 
 	if (not_enough_resources || (amm_of_out_obj > 0.9 * Max_products * n_workers && n_workers))
@@ -315,7 +319,10 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 	}
 
 	if (!wanted_workers && amm_of_out_obj < Max_products)
-		wanted_workers++;
+	{
+		if (max_workers < wanted_workers)
+			wanted_workers++;
+	}
 }
 
 UINT FactoryClass::GetOutputProductsinfo()

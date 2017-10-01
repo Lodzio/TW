@@ -1,6 +1,39 @@
 #include "unit.h"
 #include "Pathfinding.h"
 
+int UnitClass::Give_Products(InvObject * obj)
+{
+	double free_weight = MAX_WEIGHT - AccWeight;
+	int possible_ammount = free_weight / obj->weight;
+	if (!possible_ammount)
+		return 0;
+
+	for (int i = 0; i < 256; i++)
+	{
+		if (Inventory[i])
+		{
+			if (Inventory[i]->type == obj->type)
+			{
+				Inventory[i]->ammount += possible_ammount;
+				obj->ammount -= possible_ammount;
+				return possible_ammount;
+			}
+		}
+	}
+
+	for (int i = 0; i < 256; i++)
+	{
+		if (!Inventory[i])
+		{
+			if (Inventory[i]->type == obj->type)
+			{
+				Inventory[i]->ammount += possible_ammount;
+				
+			}
+		}
+	}
+}
+
 UnitClass::UnitClass()
 {
 	AccWeight = 0;

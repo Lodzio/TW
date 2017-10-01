@@ -340,6 +340,27 @@ void EmployeeClass::LookForJob(FactoryClass ** list, int ammount, float cost_of_
 			continue;
 		if (list[i]->GetSalary() > highest_salary)
 			highest_salary = list[i]->GetSalary();
+		if (list[i]->GetOwner() == this)
+		{
+			if (Working)
+			{
+				if (Employed->GetSalary() < highest_salary)
+				{
+					Employed->FireEmployee(this);
+					Employed = list[i];
+					Employed->AddEmployee(this);
+					Working = true;
+					return;
+				}
+			}
+			else
+			{
+				Employed = list[i];
+				Employed->AddEmployee(this);
+				Working = true;
+				return;
+			}
+		}
 	}
 
 	if (cost_of_life * 1.1 >= highest_salary * 30)

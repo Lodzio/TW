@@ -121,7 +121,7 @@ void SquadClass::SetTargetToRepair(Object * input)
 					submiejsce -= BuildSize.height / PLACE_FOR_ENGENEERS;
 					if (submiejsce < BuildSize.width / PLACE_FOR_ENGENEERS)
 					{
-						Point.x += BuildSize.width / PLACE_FOR_ENGENEERS;
+						Point.x += submiejsce * PLACE_FOR_ENGENEERS;
 						Point.x += ((int)BuildSize.width % PLACE_FOR_ENGENEERS) / 2;
 						Point.x += PLACE_FOR_ENGENEERS / 2;
 						Point.y += BuildSize.height;

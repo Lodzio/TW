@@ -93,6 +93,9 @@
     <ClCompile Include="Supplies.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="Service.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphicsclass.h">
@@ -163,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="InventoryObjects.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Service.h">
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

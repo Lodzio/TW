@@ -53,6 +53,7 @@ void Building::Collide(Object * input)
 
 int Building::give_supplies(int in)
 {
+	Changecarring(-in);
 	int neededsup = req_supplies - act_supplies;
 	if (in > neededsup)
 	{
@@ -62,7 +63,7 @@ int Building::give_supplies(int in)
 	}
 	else
 	{
-		req_supplies += in;
+		act_supplies += in;
 		Health = ((float)act_supplies / req_supplies) * MaxHealth;
 		in = 0;
 	}
