@@ -7,15 +7,34 @@ void ServiceClass::Update(int input)
 	{
 	case BUILDERS:
 	{
-		for (int i = 0; i < n_workers; i++)
+		if (Input_object->ammount() < 100)
 		{
-			if (Workers[i]->isinfactory)
+			double minprice = -1;
+			int index;
+			for (int i = 0; i < *amm_Suppliers; i++)
 			{
-				for (int j = 0; j < n_orders; j++)
+				if (minprice == -1 || minprice > (*Suppliers)[i]->GetPriceOfProducts())
 				{
-					if (((Building*)orders[j])->How_many_supplies_needed)
-					{
+					minprice = (*Suppliers)[i]->GetPriceOfProducts();
+					index = i;
+				}
+			}
 
+			if (minprice != -1)
+			{
+				buy_products((*Suppliers)[index], 5);
+			}
+		}
+		for (int j = 0; j < n_orders; j++)
+		{
+			if (((Building*)orders[j])->How_many_supplies_needed())
+			{
+				for (int i = 0; i < n_workers; i++)
+				{
+					if (Workers[i]->isinfactory())
+					{
+						Workers[i]->GoToFactory((FactoryClass*)orders[j]);
+						break;
 					}
 				}
 			}
@@ -23,6 +42,19 @@ void ServiceClass::Update(int input)
 		break;
 	}
 	}
+}
+
+void ServiceClass::EndOfMonth(float smallest_sallary)
+{
+	switch (FactoryType)
+	{
+	case BUILDERS:
+	{
+
+		break;
+	}
+	}
+
 }
 
 ServiceClass::ServiceClass()

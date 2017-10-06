@@ -5,10 +5,19 @@
 
 void FactoryClass::Init_factory(UINT outObj, UINT inObj, int proddelay, EmployeeClass* own, UINT typ_fact, float salary, Cityclass* city, D2D1_POINT_2L index)
 {
-	Input_object_type = inObj;
-	Output_object_type = outObj;
-	amm_of_in_obj = 0;
-	amm_of_out_obj = 0;
+	if (inObj != InvObject::TYPE::weapon && inObj != 0)
+	{
+		Input_object = new Resource(inObj);
+	}
+	else
+		Input_object = 0;
+
+	if (outObj != InvObject::TYPE::weapon && outObj != 0)
+	{
+		Output_object = new Resource(outObj);
+	}
+	else
+		Output_object = 0;
 	Prod_delay = proddelay;
 	Prod_process = 0;
 	Price = 0;
@@ -42,82 +51,16 @@ void FactoryClass::Init_factory(UINT outObj, UINT inObj, int proddelay, Employee
 int FactoryClass::buy_products(FactoryClass * fac, int wanted)
 {
 	int output;
-	float supp_price = fac->GetPriceOfProducts();
 	int ammount = fac->GetAmmountOfOutputProducts();
-
-	if (ammount >= wanted)
+	float bill = (float)fac->SellProducts(5, Input_object);
+	output = ammount;
+	if (bill > Owner->GetWallet()->GetMoney())
 	{
-		if (Owner->GetWallet()->GetMoney() >= supp_price * wanted)
-		{
-			float bill = (float)fac->SellProducts(5);
-			amm_of_in_obj += wanted;
-			output = wanted;
-			if (bill > Owner->GetWallet()->GetMoney())
-			{
-				Owner->add_debt(fac->Owner, bill);
-			}
-			else
-			{
-				Owner->GetWallet()->Give_money(bill, fac->GetOwner()->GetWallet());
-			}
-		}
-		else
-		{
-			int available = Owner->GetWallet()->GetMoney() / supp_price;
-			if (available <= 0)
-				available = 1;
-			if (available > 0)
-			{
-				float bill = fac->SellProducts(available);
-				amm_of_in_obj += available;
-				output = available;
-				if (bill > Owner->GetWallet()->GetMoney())
-				{
-					Owner->add_debt(fac->Owner, bill);
-				}
-				else
-				{
-					Owner->GetWallet()->Give_money(bill, fac->GetOwner()->GetWallet());
-				}
-			}
-		}
+		Owner->add_debt(fac->Owner, bill);
 	}
 	else
 	{
-		if (Owner->GetWallet()->GetMoney() >= supp_price * ammount)
-		{
-			float bill = fac->SellProducts(ammount);
-			amm_of_in_obj += ammount;
-			output = ammount;
-			if (bill > Owner->GetWallet()->GetMoney())
-			{
-				Owner->add_debt(fac->Owner, bill);
-			}
-			else
-			{
-				Owner->GetWallet()->Give_money(bill, fac->GetOwner()->GetWallet());
-			}
-		}
-		else
-		{
-			int available = Owner->GetWallet()->GetMoney() / supp_price;
-			if (available <= 0)
-				available = 1;
-			if (available > 0)
-			{
-				float bill = fac->SellProducts(available);
-				amm_of_in_obj += available;
-				output = available;
-				if (bill > Owner->GetWallet()->GetMoney())
-				{
-					Owner->add_debt(fac->Owner, bill);
-				}
-				else
-				{
-					Owner->GetWallet()->Give_money(bill, fac->GetOwner()->GetWallet());
-				}
-			}
-		}
+		Owner->GetWallet()->Give_money(bill, fac->GetOwner()->GetWallet());
 	}
 	return output;
 }
@@ -149,45 +92,45 @@ void FactoryClass::Update(int input)
 {
 	if (factoring)
 		Prod_process += input * n_workers;
-	if (Input_object_type)
+	if (Input_object)
 	{
 		if (Prod_process >= Prod_delay)
 		{
 			int w = Prod_process / Prod_delay;
 			Prod_process -= Prod_delay * w;
-			amm_of_out_obj += Prod_in_progress;
+			Output_object->change_ammount(Prod_in_progress);
 			ProducedProd += Prod_in_progress;
 			factoring = false;
-			if (amm_of_in_obj && amm_of_out_obj < Max_products * n_workers)
+			if (Input_object->ammount() && Output_object->ammount() < Max_products * n_workers)
 			{
 				not_enough_resources = false;
-				if (amm_of_in_obj >= w)
+				if (Input_object->ammount() >= w)
 				{
-					amm_of_in_obj -= w;
+					Input_object->change_ammount(-w);
 					Prod_in_progress = w;
 				}
 				else
 				{
-					Prod_in_progress = amm_of_in_obj;
-					amm_of_in_obj = 0;
+					Prod_in_progress = Input_object->ammount();
+					Input_object->change_ammount(-Prod_in_progress);
 				}
 				factoring = true;
 			}
 
-			if (!amm_of_in_obj)
+			if (!Input_object->ammount())
 				not_enough_resources = true;
 		}
 		else
 		{
 			if (!factoring)
 			{
-				if (amm_of_in_obj && amm_of_out_obj < 6 * 30 * 1000 / Prod_delay)
+				if (Input_object->ammount() && Output_object->ammount() < 6 * 30 * 1000 / Prod_delay)
 				{
-					amm_of_in_obj--;
+					Input_object->change_ammount(-1);
 					factoring = true;
 				}
 			}
-			else if (not_enough_resources && amm_of_in_obj)
+			else if (not_enough_resources && Input_object->ammount())
 				not_enough_resources = false;
 		}
 
@@ -204,7 +147,7 @@ void FactoryClass::Update(int input)
 			}
 		}
 
-		if (amm_of_in_obj < 3)
+		if (Input_object->ammount() < 3)
 		{
 			for (int i = 0; i < *amm_Suppliers; i++)
 			{
@@ -233,10 +176,10 @@ void FactoryClass::Update(int input)
 		{
 			int w = Prod_process / Prod_delay;
 			Prod_process -= Prod_delay * w;
-			amm_of_out_obj += w;
+			Output_object->change_ammount(w);
 			ProducedProd += w;
 		}
-		if (amm_of_out_obj >= Max_products * n_workers)
+		if (Output_object->ammount() >= Max_products * n_workers)
 			factoring = false;
 		else
 			factoring = true;
@@ -249,13 +192,13 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 	SoldProd = 0;
 	OldProducedProd = ProducedProd;
 	ProducedProd = 0;
-	if (wanted_workers > n_workers && (ProducedProd - SoldProd < 0 || amm_of_out_obj <= 5)) //kiedy podnosimy zarobki
+	if (wanted_workers > n_workers && (ProducedProd - SoldProd < 0 || Output_object->ammount() <= 5)) //kiedy podnosimy zarobki
 		if (smallest_sallary > Salary)
 			Salary = smallest_sallary;
 		else
 			Salary *= 1.1;
 
-	if (amm_of_out_obj && !OldSoldProd && !OldProducedProd) //sytuacja kiedy od miesiaca nic nie sprzedano i nie wyprodukowano, lecz jest pelny magazyn.
+	if (Output_object->ammount() && !OldSoldProd && !OldProducedProd) //sytuacja kiedy od miesiaca nic nie sprzedano i nie wyprodukowano, lecz jest pelny magazyn.
 															//Zwolnienie pracownika i zmniejszenie marzy i placy.
 	{
 		if (Margin - 0.01 >= 1.1)
@@ -272,7 +215,7 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 		}
 	}
 
-	if ((amm_of_out_obj >= n_workers * 3 * 30 * 1000 / Prod_delay && OldSoldProd < OldProducedProd)) //sytuacja kiedy produkcja jest wieksza nizsprzedaz.
+	if ((Output_object->ammount() >= n_workers * 3 * 30 * 1000 / Prod_delay && OldSoldProd < OldProducedProd)) //sytuacja kiedy produkcja jest wieksza nizsprzedaz.
 																																		//obnizenie placy pracowikow i zwolnienie pracownika
 	{
 		/*if (wanted_workers)
@@ -288,7 +231,7 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 			Salary /= 1.1;
 	}
 		
-	if ((Max_products * n_workers <= amm_of_out_obj && n_workers) || (!amm_of_in_obj && Input_object_type)) //magazyn pelny lub brak produktow. Wstrzymywanie produkcji
+	if ((Max_products * n_workers <= Output_object->ammount() && n_workers)) //magazyn pelny lub brak produktow. Wstrzymywanie produkcji
 	{
 		wanted_workers = 0;
 		while (wanted_workers < n_workers)
@@ -296,7 +239,18 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 		return;
 	}
 
-	if (amm_of_out_obj <= 2 * 30 * 1000 / Prod_delay && (OldProducedProd || !n_workers) && OldProducedProd <= OldSoldProd) //kiedy towaru jest malo podnosimy marze
+	if (Input_object)
+	{
+		if (Input_object->ammount == 0)
+		{
+			wanted_workers = 0;
+			while (wanted_workers < n_workers)
+				FireEmployee();
+			return;
+		}
+	}
+
+	if (Output_object->ammount() <= 2 * 30 * 1000 / Prod_delay && (OldProducedProd || !n_workers) && OldProducedProd <= OldSoldProd) //kiedy towaru jest malo podnosimy marze
 	{
 		Margin += 0.01;
 		if ((Margin > 1.2 || !n_workers) && !not_enough_resources && !IsLookingForEmployee())
@@ -306,7 +260,7 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 		}
 	}
 
-	if (not_enough_resources || (amm_of_out_obj > 0.9 * Max_products * n_workers && n_workers))
+	if (not_enough_resources || (Output_object->ammount() > 0.9 * Max_products * n_workers && n_workers))
 	{
 		if (Salary > 1.1 && !not_enough_resources)
 			Salary /= 1.1;
@@ -318,7 +272,7 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 		}
 	}
 
-	if (!wanted_workers && amm_of_out_obj < Max_products)
+	if (!wanted_workers && Output_object->ammount() < Max_products)
 	{
 		if (max_workers < wanted_workers)
 			wanted_workers++;
@@ -327,12 +281,12 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 
 UINT FactoryClass::GetOutputProductsinfo()
 {
-	return Output_object_type;
+	return Output_object->type();
 }
 
 UINT FactoryClass::GetInputProductsinfo()
 {
-	return Input_object_type;
+	return Input_object->type();
 }
 
 UINT FactoryClass::GetFactoryType()
@@ -342,7 +296,7 @@ UINT FactoryClass::GetFactoryType()
 
 int FactoryClass::GetAmmountOfOutputProducts()
 {
-	return amm_of_out_obj;
+	return Output_object->ammount();
 }
 
 int FactoryClass::GetAmmountOfMoney()
@@ -352,7 +306,7 @@ int FactoryClass::GetAmmountOfMoney()
 
 int FactoryClass::GetAmmountOfInputProducts()
 {
-	return amm_of_in_obj;
+	return Input_object->ammount();
 }
 
 float FactoryClass::GetPriceOfProducts()
@@ -538,16 +492,12 @@ D2D1_POINT_2F FactoryClass::GetEnter()
 	return Enter;
 }
 
-void FactoryClass::GiveProducts(int i)
+double FactoryClass::SellProducts(int ammount, InvObject* stack)
 {
-	amm_of_in_obj += i;
-}
-
-int FactoryClass::SellProducts(int ammount)
-{
-	int bill = ammount * Price;
-	amm_of_out_obj -= ammount;
-	SoldProd += ammount;
+	double bill = ammount * Price;
+	int amm = Output_object->transfer_to(stack, ammount);
+	bill = Price * amm;
+	SoldProd += amm;
 	return bill;
 }
 

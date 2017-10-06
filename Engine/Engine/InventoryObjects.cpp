@@ -2,8 +2,7 @@
 
 Weapon::Weapon(UINT Type)
 {
-	type = WEAPON;
-	weight = WEIGHT;
+	g_type = weapon;
 
 	switch(Type)
 	{
@@ -19,14 +18,67 @@ Weapon::Weapon(UINT Type)
 }
 
 
-Supply::Supply()
+Resource::Resource(UINT Type)
 {
-	type = SUPPLY;
-	weight = WEIGHT;
+	g_type = Type;
 }
 
-Concrete::Concrete()
+UINT InvObject::type()
 {
-	type = CONCRETE;
-	weight = WEIGHT;
+	return g_type;
+}
+
+int InvObject::ammount()
+{
+	return g_ammount;
+}
+
+int InvObject::transfer_to(InvObject * obj, int amm)
+{
+	if (obj == 0)
+		return -1;
+	if (g_ammount - amm < 0)
+		return -1;
+	if (g_type != obj->g_type)
+		return -1;
+
+	g_ammount -= amm;
+	obj->g_ammount += amm;
+	return 0;
+}
+
+double InvObject::weight()
+{
+	switch (g_type)
+	{
+
+	case TYPE::supply:
+	{
+		return g_ammount * INVOBJ_SUPPLY_WEIGHT;
+	}
+
+	case TYPE::concrete:
+	{
+		return g_ammount * INVOBJ_CONCRETE_WEIGHT;
+	}
+
+	case TYPE::weapon:
+	{
+		return g_ammount * INVOBJ_WEAPON_WEIGHT;
+	}
+	default:
+	{
+		return 0;
+	}
+	}
+}
+
+InvObject::InvObject()
+{
+	g_ammount = 0;
+}
+
+void InvObject::change_ammount(int i)
+{
+	g_ammount += i;
 }

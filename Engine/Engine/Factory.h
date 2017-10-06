@@ -1,6 +1,7 @@
 #ifndef _FACTORYCLASS_H_
 #define _FACTORYCLASS_H_
 #include "building.h"
+#include "InventoryObjects.h"
 
 class EmployeeClass;
 class Cityclass;
@@ -9,13 +10,11 @@ class PFindingclass;
 class FactoryClass : public Building
 {
 protected:
-	UINT Output_object_type;
-	UINT Input_object_type;
+	InvObject* Output_object;
+	InvObject* Input_object;
 	UINT FactoryType;
 	int Prod_delay; //in ms.
 	int Prod_process; //in ms.
-	int amm_of_in_obj;
-	int amm_of_out_obj;
 	float Salary;
 	float Price;
 	FactoryClass*** Suppliers;
@@ -41,7 +40,7 @@ public:
 	bool IsLookingForEmployee();
 	D2D1_POINT_2L GetIndex();
 	void SetIndex(D2D1_POINT_2L input);
-	int SellProducts(int ammount);
+	double SellProducts(int ammount, InvObject* stack);
 	void Init_factory(UINT outObj, UINT inObj, int proddelay, EmployeeClass* own, UINT typ_fact, float salary, Cityclass* city, D2D1_POINT_2L index = Point2L());
 	virtual void Update(int input);
 	virtual void EndOfMonth(float smallest_sallary);
@@ -64,22 +63,7 @@ public:
 	void SetParameters(float margin, float salary);
 	void SetEnter(Cityclass* city);
 	D2D1_POINT_2F GetEnter();
-	void GiveProducts(int i);
 	void ServeEmployee(EmployeeClass* emp);
-
-	enum
-	{
-		Null = 0,
-		Wheat = 1,
-		Flour = 2,
-		Bread = 3,
-		Iron_ore = 4,
-		Steel = 5,
-		cutlery = 6,
-		concrete = 7,
-		cement = 8
-
-	};
 
 	enum factory_type
 	{

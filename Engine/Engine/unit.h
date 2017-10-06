@@ -22,7 +22,7 @@ protected:
 		UINT UnitMode;
 	};
 public:
-	int Give_Products(InvObject* obj);
+	int Give_Products(InvObject* obj, int amm);
 	UnitClass();
 	void SetTarget(D2D1_POINT_2F tar);
 	float MaxAcceleration;

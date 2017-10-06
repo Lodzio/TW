@@ -2,32 +2,42 @@
 #define _INVOBJECTCLASS_H_
 #include <d2d1.h>
 
-#define SUPPLY_WEIGHT 5
-#define CONCRETE_WEIGHT 5
-#define WEAPON_WEIGHT 15
+#define INVOBJ_SUPPLY_WEIGHT 5
+#define INVOBJ_CONCRETE_WEIGHT 5
+#define INVOBJ_WEAPON_WEIGHT 15
 
 //extern class UINT;
 
 struct InvObject
 {
-	enum
+	enum TYPE
 	{
-		WEAPON = 0,
-		SUPPLY = 1,
-		CONCRETE = 2
+		Null = 0,
+		Wheat = 1,
+		Flour = 2,
+		Bread = 3,
+		Iron_ore = 4,
+		Steel = 5,
+		cutlery = 6,
+		concrete = 7,
+		cement = 8,
+		weapon = 9,
+		supply = 10
 	};
-
-	int type;
-	int weight;
-	int ammount;
+protected:
+	UINT g_type;
+	int g_ammount;
+public:
+	UINT type();
+	int ammount();
+	int transfer_to(InvObject* obj, int amm);
+	double weight();
+	InvObject();
+	void change_ammount(int i);
 };
 
 struct Weapon: public InvObject
 {
-	enum
-	{
-		WEIGHT = WEAPON_WEIGHT,
-	};
 	enum gun
 	{
 		M4 = 0
@@ -40,22 +50,9 @@ struct Weapon: public InvObject
 	Weapon(UINT Type);
 };
 
-struct Supply : public InvObject
+struct Resource : public InvObject
 {
-	enum
-	{
-		WEIGHT = SUPPLY_WEIGHT
-	};
-	Supply();
-};
-
-struct Concrete : public InvObject
-{
-	enum
-	{
-		WEIGHT = CONCRETE_WEIGHT
-	};
-	Concrete();
+	Resource(UINT Type);
 };
 
 #endif
