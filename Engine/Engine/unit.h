@@ -35,6 +35,7 @@ public:
 	void SetUnitType(UINT input);
 	void SetPosition(D2D1_POINT_2F Input);
 	void SetPathfinder(PFindingclass* pmaker);
+	int GiveEquipment(InvObject* in, int amm);
 protected:
 	double AccWeight;
 	InvObject* Inventory[256];

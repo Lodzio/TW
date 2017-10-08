@@ -23,8 +23,9 @@ public:
 	D2D1_POINT_2F GetPoint();
 	bool isempty();
 	void Draw_streets(ID2D1RenderTarget* target, ID2D1Brush* brush);
-	pathstruct operator= (pathstruct input);
+	pathstruct & operator= (pathstruct & input);
 	pathstruct();
+	~pathstruct();
 	double GetRange();
 private:
 

@@ -10,44 +10,31 @@ void EngineerClass::CalcPosition(int timeDiff)
 			if (Engineer_status == GOING_FOR_SUPPLIES)
 			{
 				int needed = ((Building*)Mode.OBJTarget)->How_many_supplies_needed();
+				if (needed == 0)
 				{
-					if (needed == 0)
-					{
-						Mode.UnitMode = Mode.MODE_IDLE;
-					}
-					else if (needed > MAX_WEIGHT / Supply::WEIGHT)
-					{
-						for (int i = 0; i < 256; i++)
-							if (Inventory[i] == 0)
+					Mode.UnitMode = Mode.MODE_IDLE;
+				}
+				else
+				{
+					int carring = GiveEquipment(supply_closest->Get_Suplies(), needed);
+					for (int i = 0; i < 256; i++)
+						if (Inventory[i] != 0)
+						{
+							if (Inventory[i]->type() == supply_closest->Get_Suplies()->type())
 							{
 								supply = &Inventory[i];
+								break;
 							}
-						*supply = new Supply;
-						(*supply)->ammount = supply_closest->Get_Suplies(MAX_WEIGHT / Supply::WEIGHT);
-						((Building*)(Mode.OBJTarget))->Changecarring((*supply)->ammount);
-						Engineer_status = GOING_TO_BUILD;
-						Path = pathmaker->RequestPath(Position, building_point);
-						Target = Path->GetPoint();
-					}
-					else
-					{
-						for (int i = 0; i < 256; i++)
-							if (Inventory[i] == 0)
-							{
-								supply = &Inventory[i];
-							}
-						*supply = new Supply;
-						(*supply)->ammount = supply_closest->Get_Suplies(needed);
-						((Building*)(Mode.OBJTarget))->Changecarring((*supply)->ammount);
-						Engineer_status = GOING_TO_BUILD;
-						Path = pathmaker->RequestPath(Position, building_point);
-						Target = Path->GetPoint();
-					}
+						}
+					((Building*)(Mode.OBJTarget))->Changecarring(carring);
+					Engineer_status = GOING_TO_BUILD;
+					Path = pathmaker->RequestPath(Position, building_point);
+					Target = Path->GetPoint();
 				}
 			}
 			else if (Engineer_status == GOING_TO_BUILD)
 			{
-				((Building*)Mode.OBJTarget)->give_supplies((*supply)->ammount);
+				((Building*)Mode.OBJTarget)->build((*supply)->ammount());
 				delete *supply;
 				*supply = 0;
 				if (((Building*)Mode.OBJTarget)->How_many_supplies_needed())

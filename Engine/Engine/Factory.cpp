@@ -241,7 +241,7 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 
 	if (Input_object)
 	{
-		if (Input_object->ammount == 0)
+		if (Input_object->ammount() == 0)
 		{
 			wanted_workers = 0;
 			while (wanted_workers < n_workers)
@@ -255,7 +255,7 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 		Margin += 0.01;
 		if ((Margin > 1.2 || !n_workers) && !not_enough_resources && !IsLookingForEmployee())
 		{
-			if (max_workers < wanted_workers)
+			if (max_workers > wanted_workers)
 				wanted_workers++;
 		}
 	}
@@ -274,7 +274,7 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 
 	if (!wanted_workers && Output_object->ammount() < Max_products)
 	{
-		if (max_workers < wanted_workers)
+		if (max_workers > wanted_workers)
 			wanted_workers++;
 	}
 }
@@ -286,6 +286,8 @@ UINT FactoryClass::GetOutputProductsinfo()
 
 UINT FactoryClass::GetInputProductsinfo()
 {
+	if (!Input_object)
+		return 0;
 	return Input_object->type();
 }
 
@@ -484,6 +486,15 @@ void FactoryClass::SetEnter(Cityclass * city)
 		Enter.y = Position.y;
 		break;
 	}
+	}
+}
+
+void FactoryClass::SetAmmountOfInputProd(int x)
+{
+	if (Input_object)
+	{
+		Input_object->change_ammount(-Input_object->ammount());
+		Input_object->change_ammount(x);
 	}
 }
 

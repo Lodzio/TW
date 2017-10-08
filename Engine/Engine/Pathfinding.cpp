@@ -646,6 +646,13 @@ pathstruct::pathstruct()
 	range = 0;
 }
 
+pathstruct::~pathstruct()
+{
+	while (last_path)
+		GetPoint();
+	range = 0;
+}
+
 double pathstruct::GetRange()
 {
 	return range;
@@ -700,7 +707,7 @@ bool pathstruct::is_in_stack(D2D1_POINT_2F input)
 	return false;
 }
 
-pathstruct pathstruct::operator=(pathstruct input)
+pathstruct & pathstruct::operator=(pathstruct & input)
 {
 	stack* actual;
 	stack* actualcopied;

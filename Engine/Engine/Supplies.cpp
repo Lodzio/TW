@@ -1,17 +1,12 @@
 #include "Supplies.h"
 
-int Supply_stack::Get_Suplies(int in)
+InvObject* Supply_stack::Get_Suplies()
 {
-	Supplies -= in;
-	if (Supplies < 0)
-	{
-		in -= Supplies;
-		Supplies = 0;
-	}
-	return in;
+	return object;
 }
 
 void Supply_stack::init_supply(int supp)
 {
-	Supplies = supp;
+	object = new Resource(InvObject::supply);
+	object->change_ammount(supp);
 }

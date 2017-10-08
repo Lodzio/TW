@@ -62,6 +62,7 @@ public:
 	void SetSuppler(int* num_of_supplayers, FactoryClass*** suppliers);
 	void SetParameters(float margin, float salary);
 	void SetEnter(Cityclass* city);
+	void SetAmmountOfInputProd(int x);
 	D2D1_POINT_2F GetEnter();
 	void ServeEmployee(EmployeeClass* emp);
 

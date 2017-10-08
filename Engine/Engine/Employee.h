@@ -19,6 +19,8 @@ private:
 
 	UINT employee_mode;
 	bool is_in_factory;
+	D2D1_POINT_2F point_to_comeback;
+
 	Wallet wallet;
 	FactoryClass* Employed;
 	FactoryClass*** List_of_shops;

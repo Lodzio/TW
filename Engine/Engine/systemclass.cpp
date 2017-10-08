@@ -117,13 +117,13 @@ bool SystemClass::Initialize()
 	Employee_list[n_Employee - 1]->GiveAdult();
 	AddFactory(FactoryClass::factory_type::BAKERY, Employee_list[n_Employee - 1]);
 	Employee_list[n_Employee - 1]->GetWallet()->Put_in_money(3000);
-	City.GetFactory(0)->GiveProducts(10);
+	City.GetFactory(0)->SetAmmountOfInputProd(10);
 
 	AddEmployee();
 	Employee_list[n_Employee - 1]->GiveAdult();
 	AddFactory(FactoryClass::factory_type::MINE, Employee_list[n_Employee - 1]);
 	Employee_list[n_Employee - 1]->GetWallet()->Put_in_money(3000);
-	City.GetFactory(1)->GiveProducts(10);
+	City.GetFactory(1)->SetAmmountOfInputProd(10);
 
 	AddEmployee();
 	Employee_list[n_Employee - 1]->GiveAdult();
@@ -786,27 +786,27 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 
 		if (FactoryType == FactoryClass::factory_type::BAKERY)
 		{
-			((FactoryClass*)Obj)->Init_factory(FactoryClass::Bread, FactoryClass::Flour, 1000, own, FactoryType, salary, &City);
+			((FactoryClass*)Obj)->Init_factory(InvObject::Bread, InvObject::Flour, 1000, own, FactoryType, salary, &City);
 		}
 		else if (FactoryType == FactoryClass::factory_type::FARM)
 		{
-			((FactoryClass*)Obj)->Init_factory(FactoryClass::Wheat, NULL, 750, own, FactoryType, salary, &City);
+			((FactoryClass*)Obj)->Init_factory(InvObject::Wheat, NULL, 750, own, FactoryType, salary, &City);
 		}
 		else if (FactoryType == FactoryClass::factory_type::MILL)
 		{
-			((FactoryClass*)Obj)->Init_factory(FactoryClass::Flour, FactoryClass::Wheat, 500, own, FactoryType, salary, &City);
+			((FactoryClass*)Obj)->Init_factory(InvObject::Flour, InvObject::Wheat, 500, own, FactoryType, salary, &City);
 		}
 		else if (FactoryType == FactoryClass::factory_type::MINE)
 		{
-			((FactoryClass*)Obj)->Init_factory(FactoryClass::Iron_ore, NULL, 5000, own, FactoryType, salary, &City);
+			((FactoryClass*)Obj)->Init_factory(InvObject::Iron_ore, NULL, 5000, own, FactoryType, salary, &City);
 		}
 		else if (FactoryType == FactoryClass::factory_type::FORGER)
 		{
-			((FactoryClass*)Obj)->Init_factory(FactoryClass::Steel, FactoryClass::Iron_ore, 3000, own, FactoryType, salary, &City);
+			((FactoryClass*)Obj)->Init_factory(InvObject::Steel, InvObject::Iron_ore, 3000, own, FactoryType, salary, &City);
 		}
 		else if (FactoryType == FactoryClass::factory_type::WORKSHOP)
 		{
-			((FactoryClass*)Obj)->Init_factory(FactoryClass::cutlery, FactoryClass::Steel, 8000, own, FactoryType, salary, &City);
+			((FactoryClass*)Obj)->Init_factory(InvObject::cutlery, InvObject::Steel, 8000, own, FactoryType, salary, &City);
 		}
 
 		City.AddFactory((FactoryClass*)Obj, Point2L((LONG)Pos.x, (LONG)Pos.y));
@@ -1177,7 +1177,7 @@ float SystemClass::calc_cost_of_life()
 	float price_of_bread = -1;
 	for (int i = 0; i < n_Shops; i++)
 	{
-		if (Shops_list[i]->GetOutputProductsinfo() == FactoryClass::Bread)
+		if (Shops_list[i]->GetOutputProductsinfo() == InvObject::Bread)
 		{
 			if (Shops_list[i]->GetPriceOfProducts() < price_of_bread || price_of_bread == -1)
 			{

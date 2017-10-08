@@ -1,4 +1,5 @@
 #include "Wallet.h"
+#include <iostream>
 
 Wallet::~Wallet()
 {
@@ -20,5 +21,7 @@ void Wallet::Put_in_money(double ammount)
 
 double Wallet::GetMoney()
 {
+	if (_money < 0)
+		_sleep(1);
 	return _money;
 }

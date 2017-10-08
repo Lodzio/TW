@@ -9,7 +9,7 @@ protected:
 	int act_supplies;
 	int supplies_in_way;
 public:
-	int give_supplies(int in);
+	int build(int amm_of_supplies);
 	Building();
 	void Changecarring(int i);
 	int How_many_supplies_needed();

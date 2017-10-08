@@ -1,13 +1,14 @@
 #ifndef _SUPPLY_STACK_CLASS_H_
 #define _SUPPLY_STACK_CLASS_H_
 #include "object.h"
+#include "InventoryObjects.h"
 
 class Supply_stack : public Object
 {
 private:
-	int Supplies;
+	Resource* object;
 public:
-	int Get_Suplies(int in);
+	InvObject* Supply_stack::Get_Suplies();
 	void init_supply(int supp);
 };
 

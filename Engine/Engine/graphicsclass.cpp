@@ -488,28 +488,27 @@ bool GraphicsClass::DrawInterface()
 			char* inputtext = 0;
 			char* outputtext = 0;
 			const float scale = 0.5;
-
 			switch (((FactoryClass*)Mode.selected)->GetInputProductsinfo())
 			{
-					case FactoryClass::Wheat:
+					case InvObject::Wheat:
 					{
 						inputtext = "Wheat: ";
 						break;
 					}
 
-					case FactoryClass::Flour:
+					case InvObject::Flour:
 					{
 						inputtext = "Flour: ";
 						break;
 					}
 
-					case FactoryClass::Iron_ore:
+					case InvObject::Iron_ore:
 					{
 						inputtext = "Iron ore: ";
 						break;
 					}
 
-					case FactoryClass::Steel:
+					case InvObject::Steel:
 					{
 						inputtext = "Steel: ";
 						break;
@@ -529,37 +528,37 @@ bool GraphicsClass::DrawInterface()
 
 			switch (((FactoryClass*)Mode.selected)->GetOutputProductsinfo())
 			{
-				case FactoryClass::Wheat:
+				case InvObject::Wheat:
 				{
 					outputtext = "Wheat: ";
 					break;
 				}
 
-				case FactoryClass::Flour:
+				case InvObject::Flour:
 				{
 					outputtext = "Flour: ";
 					break;
 				}
 
-				case FactoryClass::Bread:
+				case InvObject::Bread:
 				{
 					outputtext = "Bread: ";
 					break;
 				}
 
-				case FactoryClass::Iron_ore:
+				case InvObject::Iron_ore:
 				{
 					outputtext = "Iron ore: ";
 					break;
 				}
 
-				case FactoryClass::Steel:
+				case InvObject::Steel:
 				{
 					outputtext = "Steel: ";
 					break;
 				}
 
-				case FactoryClass::cutlery:
+				case InvObject::cutlery:
 				{
 					outputtext = "Cutlery: ";
 					break;

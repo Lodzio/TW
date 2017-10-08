@@ -11,6 +11,7 @@ private:
 	void EndOfMonth(float smallest_sallary);
 public:
 	ServiceClass();
+	double prize_order(PFindingclass* pathmaker, Building* order);
 };
 
 #endif

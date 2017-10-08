@@ -14,7 +14,7 @@ int UnitClass::Give_Products(InvObject * obj, int amm)
 	{
 		if (Inventory[i])
 		{
-			if (Inventory[i]->type == obj->type())
+			if (Inventory[i]->type() == obj->type())
 			{
 				possible_ammount = obj->transfer_to(Inventory[i], possible_ammount);
 			}
@@ -25,7 +25,7 @@ int UnitClass::Give_Products(InvObject * obj, int amm)
 	{
 		if (!Inventory[i])
 		{
-			if (Inventory[i]->type == obj->type)
+			if (Inventory[i]->type() == obj->type())
 			{
 				possible_ammount = obj->transfer_to(Inventory[i], possible_ammount);
 			}
@@ -201,4 +201,35 @@ void UnitClass::SetPosition(D2D1_POINT_2F Input)
 void UnitClass::SetPathfinder(PFindingclass * pmaker)
 {
 	pathmaker = pmaker;
+}
+
+int UnitClass::GiveEquipment(InvObject * in, int amm)
+{
+	double single_object_weight;
+	int output;
+	double free_weight = MAX_WEIGHT - AccWeight;
+
+	single_object_weight = in->weight() / in->ammount();
+	output = free_weight / single_object_weight;
+	if (output > amm)
+		output = amm;
+
+	for (int i = 0; i < 256; i++)
+		if (Inventory[i] != 0)
+		{
+			if (Inventory[i]->type() == in->type())
+			{
+				output = in->transfer_to(Inventory[i], output);
+				return output;
+			}
+		}
+
+	for (int i = 0; i < 256; i++)
+		if (Inventory[i] == 0)
+		{
+			Inventory[i] = new Resource(in->type());
+			output = in->transfer_to(Inventory[i], output);
+			return output;
+		}
+	return -1;
 }

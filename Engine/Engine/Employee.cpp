@@ -20,9 +20,9 @@ void EmployeeClass::Buy()
 	{
 		int amm_of_prod = (*List_of_shops)[i]->GetAmmountOfOutputProducts();
 		float supp_prize = (*List_of_shops)[i]->GetPriceOfProducts();
-		if ((supp_prize < lowest_bread_price || lowest_bread_price == -1) && amm_of_prod && (*List_of_shops)[i]->GetOutputProductsinfo() == FactoryClass::Bread)
+		if ((supp_prize < lowest_bread_price || lowest_bread_price == -1) && amm_of_prod && (*List_of_shops)[i]->GetOutputProductsinfo() == InvObject::Bread)
 			lowest_bread_price = supp_prize;
-		if ((supp_prize < lowest_cutlery_price || lowest_cutlery_price == -1) && amm_of_prod && (*List_of_shops)[i]->GetOutputProductsinfo() == FactoryClass::cutlery)
+		if ((supp_prize < lowest_cutlery_price || lowest_cutlery_price == -1) && amm_of_prod && (*List_of_shops)[i]->GetOutputProductsinfo() == InvObject::cutlery)
 			lowest_cutlery_price = supp_prize;
 	}
 
@@ -30,7 +30,7 @@ void EmployeeClass::Buy()
 	{
 		int amm_of_prod = (*List_of_shops)[i]->GetAmmountOfOutputProducts();
 		float supp_prize = (*List_of_shops)[i]->GetPriceOfProducts();
-		if (supp_prize != lowest_bread_price || !amm_of_prod || (*List_of_shops)[i]->GetOutputProductsinfo() != FactoryClass::Bread)
+		if (supp_prize != lowest_bread_price || !amm_of_prod || (*List_of_shops)[i]->GetOutputProductsinfo() != InvObject::Bread)
 			continue;
 		int hung_supply = 100 - (((wallet.GetMoney() / (*List_of_shops)[i]->GetPriceOfProducts()) - lowl_mon) * (upl_hun / (upl_mon - lowl_mon)));
 
@@ -54,7 +54,9 @@ void EmployeeClass::Buy()
 		{
 			if ((*List_of_shops)[i]->GetPriceOfProducts() < wallet.GetMoney())
 			{
-				float bill = (*List_of_shops)[i]->SellProducts(1);
+				Resource* meal = new Resource(InvObject::Bread);
+				float bill = (*List_of_shops)[i]->SellProducts(1, meal);
+				delete meal;
 				wallet.Give_money(bill, (*List_of_shops)[i]->GetOwner()->GetWallet());
 				Hungry += hung_supply;
 				break;
@@ -66,13 +68,15 @@ void EmployeeClass::Buy()
 	{
 		int amm_of_prod = (*List_of_shops)[i]->GetAmmountOfOutputProducts();
 		float supp_prize = (*List_of_shops)[i]->GetPriceOfProducts();
-		if (supp_prize != lowest_cutlery_price || !amm_of_prod || (*List_of_shops)[i]->GetOutputProductsinfo() != FactoryClass::cutlery)
+		if (supp_prize != lowest_cutlery_price || !amm_of_prod || (*List_of_shops)[i]->GetOutputProductsinfo() != InvObject::cutlery)
 			continue;
 		if (Cutlerys <= 0)
 		{
 			if ((*List_of_shops)[i]->GetPriceOfProducts() < wallet.GetMoney())
 			{
-				float bill = (*List_of_shops)[i]->SellProducts(1);
+				Resource* eqq = new Resource(InvObject::cutlery);
+				float bill = (*List_of_shops)[i]->SellProducts(1, eqq);
+				delete eqq;
 				wallet.Give_money(bill, (*List_of_shops)[i]->GetOwner()->GetWallet());
 				Cutlerys = 10;
 				break;
@@ -434,6 +438,7 @@ void EmployeeClass::GoToFactory(FactoryClass * Fac)
 	SetTarget(B);
 	employee_mode = GO_FOR_PORODUCTS;
 	is_in_factory = false;
+	point_to_comeback = A;
 }
 
 bool EmployeeClass::isinfactory()
@@ -443,8 +448,5 @@ bool EmployeeClass::isinfactory()
 
 void EmployeeClass::ComeBackToFactory()
 {
-	D2D1_POINT_2F B;
-	B = Employed->GetEnter();
-
-	SetTarget(B);
+	SetTarget(point_to_comeback);
 }

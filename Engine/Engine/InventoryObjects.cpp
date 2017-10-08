@@ -37,14 +37,15 @@ int InvObject::transfer_to(InvObject * obj, int amm)
 {
 	if (obj == 0)
 		return -1;
-	if (g_ammount - amm < 0)
-		return -1;
 	if (g_type != obj->g_type)
 		return -1;
 
+	if (g_ammount < amm)
+		amm = g_ammount;
+
 	g_ammount -= amm;
 	obj->g_ammount += amm;
-	return 0;
+	return amm;
 }
 
 double InvObject::weight()

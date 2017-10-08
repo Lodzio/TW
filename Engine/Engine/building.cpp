@@ -51,23 +51,23 @@ void Building::Collide(Object * input)
 	}
 }
 
-int Building::give_supplies(int in)
+int Building::build(int amm_of_supplies)
 {
-	Changecarring(-in);
+	Changecarring(-amm_of_supplies);
 	int neededsup = req_supplies - act_supplies;
-	if (in > neededsup)
+	if (amm_of_supplies > neededsup)
 	{
 		act_supplies = req_supplies;
 		Health = MaxHealth;
-		in -= neededsup;
+		amm_of_supplies -= neededsup;
 	}
 	else
 	{
-		act_supplies += in;
+		act_supplies += amm_of_supplies;
 		Health = ((float)act_supplies / req_supplies) * MaxHealth;
-		in = 0;
+		amm_of_supplies = 0;
 	}
-	return in;
+	return amm_of_supplies;
 }
 
 Building::Building()
