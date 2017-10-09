@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "systemclass.h"
 #include "Pathfinding.h"
+#include "Service.h"
 
 SystemClass::SystemClass()
 {
@@ -34,6 +35,8 @@ SystemClass::SystemClass()
 	n_Mine = 0;
 	n_Forger = 0;
 	n_Workshop = 0;
+	n_Builders = 0;
+	n_brickery = 0;
 	CityCenter = Point2L(4000, 3000);
 	cost_of_life = 300;
 	Graphinput.path = 0;
@@ -287,7 +290,7 @@ bool SystemClass::Frame()
 	if (daily_timer > 1000)
 	{
 		UpdateCity(1000);
-		daily_timer -= 1000;
+		daily_timer -= 200;
 		monthly_timer++;
 		if (monthly_timer == 30)
 		{
@@ -778,7 +781,10 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		scale.height = (float)((0.2 * (Screen.bottom - Screen.top)) / 100);
 		scale.width = (float)((0.2 * (Screen.bottom - Screen.top)) / 100);
 
-		Obj = new FactoryClass;
+		if (FactoryType != FactoryClass::factory_type::BUILDERS)
+			Obj = new FactoryClass;
+		else
+			Obj = new ServiceClass;
 		Obj->initialize(index, Pos, 0, siz, scale, 1, 1000, rc, Point2F(0.5, 0.5), OBJTYPES::BUILDING);
 		Obj->SetFractions(Fraction);
 
@@ -807,6 +813,14 @@ bool SystemClass::PlaceUnit(D2D1_POINT_2F Pos, Object* &Obj, int index, UINT uni
 		else if (FactoryType == FactoryClass::factory_type::WORKSHOP)
 		{
 			((FactoryClass*)Obj)->Init_factory(InvObject::cutlery, InvObject::Steel, 8000, own, FactoryType, salary, &City);
+		}
+		else if (FactoryType == FactoryClass::factory_type::BRICKERY)
+		{
+			((FactoryClass*)Obj)->Init_factory(InvObject::concrete, NULL, 4000, own, FactoryType, salary, &City);
+		}
+		else if (FactoryType == FactoryClass::factory_type::BUILDERS)
+		{
+			((FactoryClass*)Obj)->Init_factory(NULL, InvObject::concrete, 4000, own, FactoryType, salary, &City);
 		}
 
 		City.AddFactory((FactoryClass*)Obj, Point2L((LONG)Pos.x, (LONG)Pos.y));
@@ -1071,7 +1085,7 @@ void SystemClass::UpdateFamily()
 	{
 		if (m_Family[i]->Get_n_adults_members() >= 2 && m_Family[i]->life_status > 3)
 		{
-			if (rand() % 100 < 10)
+			if (rand() % 100 < 30)
 			{
 				AddEmployee();
 				m_Family[i]->AddMember(Employee_list[n_Employee - 1]);
@@ -1156,6 +1170,19 @@ void SystemClass::AddFactory(UINT type, EmployeeClass* owner, D2D1_POINT_2L inde
 		break;
 	}
 
+	case FactoryClass::BRICKERY:
+	{
+		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::BRICKERY, owner);
+		break;
+	}
+
+	case FactoryClass::BUILDERS:
+	{
+		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::BUILDERS, owner);
+		((FactoryClass*)new_fact)->SetSuppler(&n_brickery, &Brickery_list);
+	}
+		break;
+
 	}
 	Add_Factory_to_sublist((FactoryClass*)new_fact);
 }
@@ -1232,6 +1259,18 @@ void SystemClass::Add_Factory_to_sublist(FactoryClass * input)
 		n_elements = n_Bakery + n_Workshop;
 		list = &Shops_list;
 	}
+	else if (Type == FactoryClass::BRICKERY)
+	{
+		add_element = &n_brickery;
+		n_elements = *add_element;
+		list = &Brickery_list;
+	}
+	else if (Type == FactoryClass::BUILDERS)
+	{
+		add_element = &n_Builders;
+		n_elements = *add_element;
+		list = &Builders_list;
+	}
 	FactoryClass** Buffor = new FactoryClass*[n_elements + 1];
 
 	for (int i = 0; i < n_elements; i++)
@@ -1287,6 +1326,18 @@ void SystemClass::Remove_Factory_from_sublist(FactoryClass * input)
 		add_element = &n_Workshop;
 		n_elements = n_Bakery + n_Workshop;
 		list = &Shops_list;
+	}
+	else if (Type == FactoryClass::BRICKERY)
+	{
+		add_element = &n_brickery;
+		n_elements = *add_element;
+		list = &Brickery_list;
+	}
+	else if (Type == FactoryClass::BUILDERS)
+	{
+		add_element = &n_Builders;
+		n_elements = *add_element;
+		list = &Builders_list;
 	}
 
 	FactoryClass** buffor = 0;
@@ -1467,6 +1518,16 @@ void SystemClass::MakeNewWorkplaces()
 			else if (!n_Workshop)
 			{
 				AddFactory(FactoryClass::WORKSHOP, Employee_list[i]);
+				return;
+			}
+			else if (!n_brickery)
+			{
+				AddFactory(FactoryClass::BRICKERY, Employee_list[i]);
+				return;
+			}
+			else if (!n_Builders)
+			{
+				AddFactory(FactoryClass::BUILDERS, Employee_list[i]);
 				return;
 			}
 

@@ -123,6 +123,12 @@ private:
 
 	int n_Workshop;
 
+	FactoryClass** Builders_list;
+	int n_Builders;
+
+	FactoryClass** Brickery_list;
+	int n_brickery;
+
 	EmployeeClass** Employee_list;
 	int n_Employee;
 	void AddEmployee();

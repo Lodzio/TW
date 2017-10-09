@@ -2,12 +2,37 @@
 #include "Employee.h"
 #include "Pathfinding.h"
 
-void ServiceClass::Update(int input)
+void ServiceClass::Update(int input, PFindingclass* pathmaker)
 {
 	switch (FactoryType)
 	{
 	case BUILDERS:
 	{
+
+
+		float lowest_price = -1;
+		int index = -1;
+		for (int i = 0; i < *amm_Suppliers; i++)
+		{
+			int ammount = (*Suppliers)[i]->GetAmmountOfOutputProducts();
+			if (!ammount)
+				continue;
+			float supp_price = (*Suppliers)[i]->GetPriceOfProducts();
+			pathstruct* path = pathmaker->RequestPath(Enter, (*Suppliers)[i]->GetEnter());
+			double path_lenght = path->GetRange();
+			delete path;
+			supp_price += (2 * (path_lenght / 200) * Salary) / ammount;
+			cost_of_single_raw_material = supp_price;
+
+			if (lowest_price == -1 || lowest_price > supp_price)
+			{
+				Price = supp_price + (Salary * Prod_delay / 1000.0);
+				Price *= Margin;
+				lowest_price = supp_price;
+				index = i;
+			}
+		}
+
 		int acctual_amm_of_objects = Input_object->ammount();
 		if (acctual_amm_of_objects < 100)
 		{
@@ -17,12 +42,21 @@ void ServiceClass::Update(int input)
 				int index;
 				for (int i = 0; i < *amm_Suppliers; i++)
 				{
-					if ((*Suppliers)[i]->GetAmmountOfOutputProducts())
-						if (minprice == -1 || minprice > (*Suppliers)[i]->GetPriceOfProducts())
-						{
-							minprice = (*Suppliers)[i]->GetPriceOfProducts();
-							index = i;
-						}
+					int ammount = (*Suppliers)[i]->GetAmmountOfOutputProducts();
+					if (!ammount)
+						continue;
+					float supp_price = (*Suppliers)[i]->GetPriceOfProducts();
+					pathstruct* path = pathmaker->RequestPath(Enter, (*Suppliers)[i]->GetEnter());
+					double path_lenght = path->GetRange();
+					delete path;
+					supp_price += (2 * (path_lenght / 200) * Salary) / ammount;
+					cost_of_single_raw_material = supp_price;
+
+					if (minprice == -1 || minprice > supp_price)
+					{
+						minprice = supp_price;
+						index = i;
+					}
 				}
 
 				if (minprice != -1)
@@ -123,6 +157,7 @@ double ServiceClass::prize_order(PFindingclass* pathmaker, Building* order)
 		double path_lenght = path->GetRange();
 		delete path;
 		prize = 2 * (path_lenght / 200) * Salary;
+		prize += cost_of_single_raw_material * order->How_many_supplies_needed();
 		break;
 	}
 

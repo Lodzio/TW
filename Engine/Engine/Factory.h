@@ -33,6 +33,7 @@ protected:
 	int Max_products;
 	D2D1_POINT_2F Enter;
 	int buy_products(FactoryClass* fac, int wanted);
+	double cost_of_single_raw_material;
 public:
 	~FactoryClass();
 	float GetSalary();
@@ -42,7 +43,7 @@ public:
 	void SetIndex(D2D1_POINT_2L input);
 	double SellProducts(int ammount, InvObject* stack);
 	void Init_factory(UINT outObj, UINT inObj, int proddelay, EmployeeClass* own, UINT typ_fact, float salary, Cityclass* city, D2D1_POINT_2L index = Point2L());
-	virtual void Update(int input);
+	virtual void Update(int input, PFindingclass* pathmaker);
 	virtual void EndOfMonth(float smallest_sallary);
 	UINT GetOutputProductsinfo();
 	UINT GetInputProductsinfo();
@@ -74,7 +75,8 @@ public:
 		WORKSHOP = 3,
 		MINE = 4,
 		FORGER = 5,
-		BUILDERS = 6
+		BUILDERS = 6,
+		BRICKERY = 7
 	};
 };
 

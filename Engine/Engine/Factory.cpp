@@ -88,7 +88,7 @@ bool FactoryClass::IsLookingForEmployee()
 	return false;
 }
 
-void FactoryClass::Update(int input)
+void FactoryClass::Update(int input, PFindingclass* pathmaker)
 {
 	if (factoring)
 		Prod_process += input * n_workers;
@@ -135,36 +135,37 @@ void FactoryClass::Update(int input)
 		}
 
 		float lowest_price = -1;
+		int index = -1;
 		for (int i = 0; i < *amm_Suppliers; i++)
 		{
-			float supp_price = (*Suppliers)[i]->GetPriceOfProducts();
 			int ammount = (*Suppliers)[i]->GetAmmountOfOutputProducts();
-			if ((lowest_price == -1 || lowest_price > supp_price) && ammount)
+			if (!ammount)
+				continue;
+			float supp_price = (*Suppliers)[i]->GetPriceOfProducts();
+			pathstruct* path = pathmaker->RequestPath(Enter, (*Suppliers)[i]->GetEnter());
+			double path_lenght = path->GetRange();
+			delete path;
+			supp_price += (2 * (path_lenght / 200) * Salary) / ammount;
+			cost_of_single_raw_material = supp_price;
+
+			if (lowest_price == -1 || lowest_price > supp_price)
 			{
-				Price = (float)((*Suppliers)[i]->GetPriceOfProducts() + (Salary * Prod_delay / 1000.0));
+				Price = supp_price + (Salary * Prod_delay / 1000.0);
 				Price *= Margin;
 				lowest_price = supp_price;
+				index = i;
 			}
 		}
 
 		if (Input_object->ammount() < 3)
 		{
-			for (int i = 0; i < *amm_Suppliers; i++)
+			buy_products((*Suppliers)[index], 5);
+
+			for (int j = 0; j < n_workers; j++)
 			{
-				float supp_price = (*Suppliers)[i]->GetPriceOfProducts();
-				int ammount = (*Suppliers)[i]->GetAmmountOfOutputProducts();
-
-				if (lowest_price != supp_price || !ammount)
-					continue;
-
-				buy_products((*Suppliers)[i], 5);
-
-				for (int j = 0; j < n_workers; j++)
+				if (Workers[j]->isinfactory())
 				{
-					if (Workers[j]->isinfactory())
-					{
-						Workers[j]->GoToFactory((*Suppliers)[i]);
-					}
+					Workers[j]->GoToFactory((*Suppliers)[index]);
 				}
 			}
 		}
@@ -188,6 +189,14 @@ void FactoryClass::Update(int input)
 
 void FactoryClass::EndOfMonth(float smallest_sallary)
 {
+
+	if (n_workers == max_workers)
+	{
+		int index;
+		double smalest_cost = -1;
+		for (int i = 0; i < n_builders)
+	}
+
 	OldSoldProd = SoldProd;
 	SoldProd = 0;
 	OldProducedProd = ProducedProd;
