@@ -564,19 +564,29 @@ bool GraphicsClass::DrawInterface()
 					break;
 				}
 
+				case NULL:
+				{
+					outputtext = NULL;
+					break;
+				}
+
 				default:
 				{
 					outputtext = "output: ";
 				}
 			}
+			FactoryClass* fac = (FactoryClass*)Mode.selected;
+			if (fac->GetAmmountOfMoney() < 0)
+				fac->GetAmmountOfMoney();
 			if (inputtext)
-				DrawTextwnum(inputtext, ((FactoryClass*)Mode.selected)->GetAmmountOfInputProducts(), Point2F(0.02f * m_Direct2D->GetResolution().width, 0.83f * m_Direct2D->GetResolution().height), scale);
-			DrawTextwnum(outputtext, ((FactoryClass*)Mode.selected)->GetAmmountOfOutputProducts(), Point2F(0.02f * m_Direct2D->GetResolution().width,(32 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
-			DrawTextwnum("Money: ", ((FactoryClass*)Mode.selected)->GetAmmountOfMoney(), Point2F(0.02f * m_Direct2D->GetResolution().width, (64 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
-			DrawTextwnum("Prize: ", (float)((FactoryClass*)Mode.selected)->GetPriceOfProducts(), Point2F(0.02f * m_Direct2D->GetResolution().width, (96 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
-			DrawTextwnum("Margin: ", (float)((FactoryClass*)Mode.selected)->GetMargin() * 100, Point2F(0.02f * m_Direct2D->GetResolution().width, (128 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
-			DrawTextwnum("Workers: ", ((FactoryClass*)Mode.selected)->GetAmmountOfWorkers(), ((FactoryClass*)Mode.selected)->GetAmmountOfWantedWorkers() ,Point2F(0.1f * m_Direct2D->GetResolution().width, 0.83f * m_Direct2D->GetResolution().height), scale);
-			DrawTextwnum("Salary: ", (float)((FactoryClass*)Mode.selected)->GetSalary() * 30, Point2F(0.1f * m_Direct2D->GetResolution().width, (32 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
+				DrawTextwnum(inputtext, fac->GetAmmountOfInputProducts(), Point2F(0.02f * m_Direct2D->GetResolution().width, 0.83f * m_Direct2D->GetResolution().height), scale);
+			if (outputtext)
+				DrawTextwnum(outputtext, fac->GetAmmountOfOutputProducts(), Point2F(0.02f * m_Direct2D->GetResolution().width,(32 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
+			DrawTextwnum("Money: ", fac->GetAmmountOfMoney(), Point2F(0.02f * m_Direct2D->GetResolution().width, (64 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
+			DrawTextwnum("Prize: ", (float)fac->GetPriceOfProducts(), Point2F(0.02f * m_Direct2D->GetResolution().width, (96 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
+			DrawTextwnum("Margin: ", (float)fac->GetMargin() * 100, Point2F(0.02f * m_Direct2D->GetResolution().width, (128 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
+			DrawTextwnum("Workers: ", fac->GetAmmountOfWorkers(), ((FactoryClass*)Mode.selected)->GetAmmountOfWantedWorkers() ,Point2F(0.1f * m_Direct2D->GetResolution().width, 0.83f * m_Direct2D->GetResolution().height), scale);
+			DrawTextwnum("Salary: ", (float)fac->GetSalary() * 30, Point2F(0.1f * m_Direct2D->GetResolution().width, (32 * scale) + 0.83f * m_Direct2D->GetResolution().height), scale);
 		}
 	}
 	return true;

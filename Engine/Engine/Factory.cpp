@@ -2,6 +2,7 @@
 #include "Employee.h"
 #include "city.h"
 #include "Pathfinding.h"
+#include "Service.h"
 
 void FactoryClass::Init_factory(UINT outObj, UINT inObj, int proddelay, EmployeeClass* own, UINT typ_fact, float salary, Cityclass* city, D2D1_POINT_2L index)
 {
@@ -22,6 +23,7 @@ void FactoryClass::Init_factory(UINT outObj, UINT inObj, int proddelay, Employee
 	Prod_process = 0;
 	Price = 0;
 	Suppliers = 0;
+	level = 0;
 	amm_Suppliers = 0;
 	Salary = salary;
 	Index = index;
@@ -34,10 +36,13 @@ void FactoryClass::Init_factory(UINT outObj, UINT inObj, int proddelay, Employee
 	n_workers = 0;
 	wanted_workers = 1;
 	max_workers = 1;
+	max_workers_per_level = 1;
 	Prod_in_progress = 0;
 	FactoryType = typ_fact;
 	not_enough_resources = false;
 	Max_products = 6 * 30 * 1000 / Prod_delay;
+	req_supplies = 50;
+	upgrading = false;
 
 	if (inObj == NULL)
 	{
@@ -46,6 +51,35 @@ void FactoryClass::Init_factory(UINT outObj, UINT inObj, int proddelay, Employee
 	}
 	else
 		factoring = false;
+}
+
+void FactoryClass::increase_level()
+{
+	if (Health != MaxHealth)
+		return;
+	switch (level)
+	{
+	case 0:
+	{
+		max_workers_per_level = 3;
+		level++;
+		break;
+	}
+	case 1:
+	{
+		max_workers_per_level = 10;
+		break;
+	}
+	case 2:
+	{
+		max_workers_per_level = 20;
+		break;
+	}
+	}
+
+	level++;
+	req_supplies = max_workers_per_level * ((float)act_supplies / max_workers);
+	Health = ((float)act_supplies / req_supplies) * MaxHealth;
 }
 
 int FactoryClass::buy_products(FactoryClass * fac, int wanted)
@@ -157,6 +191,9 @@ void FactoryClass::Update(int input, PFindingclass* pathmaker)
 			}
 		}
 
+		if (index == -1)
+			return;
+
 		if (Input_object->ammount() < 3)
 		{
 			buy_products((*Suppliers)[index], 5);
@@ -165,7 +202,7 @@ void FactoryClass::Update(int input, PFindingclass* pathmaker)
 			{
 				if (Workers[j]->isinfactory())
 				{
-					Workers[j]->GoToFactory((*Suppliers)[index]);
+					Workers[j]->GoToFactory((*Suppliers)[index], EmployeeClass::GO_FOR_PORODUCTS);
 				}
 			}
 		}
@@ -187,14 +224,31 @@ void FactoryClass::Update(int input, PFindingclass* pathmaker)
 	}
 }
 
-void FactoryClass::EndOfMonth(float smallest_sallary)
+void FactoryClass::EndOfMonth(float smallest_sallary, PFindingclass* pathmaker)
 {
-
-	if (n_workers == max_workers)
+	if (Health == MaxHealth && !upgrading)
 	{
-		int index;
-		double smalest_cost = -1;
-		for (int i = 0; i < n_builders)
+		if (n_workers == max_workers)
+		{
+			increase_level();
+		}
+		int index = -1;
+		double smallest_cost = -1;
+		for (int i = 0; i < *amm_Builders; i++)
+		{
+			double cost = (*Builders)[i]->prize_order(pathmaker, this);
+			if (smallest_cost > cost || smallest_cost == -1)
+			{
+				smallest_cost = cost;
+				index = i;
+			}
+		}
+		if (index != -1 && smallest_cost * 1.2 < Owner->GetWallet()->GetMoney())
+		{
+			smallest_cost = (*Builders)[index]->order(pathmaker, this);
+			Owner->GetWallet()->Give_money(smallest_cost, (*Builders)[index]->GetOwner()->GetWallet());
+			upgrading = true;
+		}
 	}
 
 	OldSoldProd = SoldProd;
@@ -290,6 +344,8 @@ void FactoryClass::EndOfMonth(float smallest_sallary)
 
 UINT FactoryClass::GetOutputProductsinfo()
 {
+	if (!Output_object)
+		return 0;
 	return Output_object->type();
 }
 
@@ -400,10 +456,12 @@ void FactoryClass::FireEmployee(EmployeeClass * input)
 	n_workers--;
 }
 
-void FactoryClass::SetSuppler(int * num_of_supplayers, FactoryClass *** suppliers)
+void FactoryClass::SetSuppler(int * num_of_supplayers, FactoryClass *** suppliers, int* num_of_builders, ServiceClass*** builders)
 {
 	amm_Suppliers = num_of_supplayers;
 	Suppliers = suppliers;
+	amm_Builders = num_of_builders;
+	Builders = builders;
 }
 
 void FactoryClass::SetParameters(float margin, float salary)
@@ -510,6 +568,17 @@ void FactoryClass::SetAmmountOfInputProd(int x)
 D2D1_POINT_2F FactoryClass::GetEnter()
 {
 	return Enter;
+}
+
+int FactoryClass::build(InvObject * supplies)
+{
+	int output = Building::build(supplies);
+	max_workers = ((float)act_supplies / req_supplies) * max_workers_per_level;
+	if (!max_workers)
+		max_workers = 1;
+	if (Health == MaxHealth)
+		upgrading = false;
+	return output;
 }
 
 double FactoryClass::SellProducts(int ammount, InvObject* stack)

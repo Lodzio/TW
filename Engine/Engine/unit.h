@@ -36,7 +36,9 @@ public:
 	void SetPosition(D2D1_POINT_2F Input);
 	void SetPathfinder(PFindingclass* pmaker);
 	int GiveEquipment(InvObject* in, int amm);
+	InvObject* GetInvObject(UINT type);
 protected:
+	void Chceck_weight();
 	double AccWeight;
 	InvObject* Inventory[256];
 	PFindingclass* pathmaker;

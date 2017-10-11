@@ -43,8 +43,8 @@ int InvObject::transfer_to(InvObject * obj, int amm)
 	if (g_ammount < amm)
 		amm = g_ammount;
 
-	g_ammount -= amm;
-	obj->g_ammount += amm;
+	change_ammount(-amm);
+	obj->change_ammount(amm);
 	return amm;
 }
 

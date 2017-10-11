@@ -121,6 +121,12 @@ void EmployeeClass::CalcPosition(int timeDiff)
 				ComeBackToFactory();
 				employee_mode = IDLE;
 			}
+			else if (employee_mode == BUILD)
+			{
+				target_to_go->build(GetInvObject(InvObject::concrete));
+				employee_mode = IDLE;
+				ComeBackToFactory();
+			}
 		}
 		UnitClass::CalcPosition(timeDiff);
 	}
@@ -427,7 +433,7 @@ int EmployeeClass::MonthsWithoutJob()
 	return Workless_month;
 }
 
-void EmployeeClass::GoToFactory(FactoryClass * Fac)
+void EmployeeClass::GoToFactory(FactoryClass * Fac, UINT target)
 {
 	if (!Working)
 		return;
@@ -436,9 +442,10 @@ void EmployeeClass::GoToFactory(FactoryClass * Fac)
 	B = Fac->GetEnter();
 	Object::SetPosition(A);
 	SetTarget(B);
-	employee_mode = GO_FOR_PORODUCTS;
+	employee_mode = target;
 	is_in_factory = false;
 	point_to_comeback = A;
+	target_to_go = Fac;
 }
 
 bool EmployeeClass::isinfactory()

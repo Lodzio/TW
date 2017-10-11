@@ -145,6 +145,16 @@ bool SystemClass::Initialize()
 	Employee_list[n_Employee - 1]->GiveAdult();
 	AddFactory(FactoryClass::factory_type::FORGER, Employee_list[n_Employee - 1]);
 	Employee_list[n_Employee - 1]->GetWallet()->Put_in_money(3000);
+	
+	AddEmployee();
+	Employee_list[n_Employee - 1]->GiveAdult();
+	AddFactory(FactoryClass::factory_type::BUILDERS, Employee_list[n_Employee - 1]);
+	Employee_list[n_Employee - 1]->GetWallet()->Put_in_money(3000);
+
+	AddEmployee();
+	Employee_list[n_Employee - 1]->GiveAdult();
+	AddFactory(FactoryClass::factory_type::BRICKERY, Employee_list[n_Employee - 1]);
+	Employee_list[n_Employee - 1]->GetWallet()->Put_in_money(3000);
 
 	lookForJob();
 	
@@ -1133,53 +1143,56 @@ void SystemClass::AddFactory(UINT type, EmployeeClass* owner, D2D1_POINT_2L inde
 	case FactoryClass::BAKERY:
 	{
 		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::BAKERY, owner);
-		((FactoryClass*)new_fact)->SetSuppler(&n_Mill, &Mill_list);
+		((FactoryClass*)new_fact)->SetSuppler(&n_Mill, &Mill_list, &n_Builders, &Builders_list);
 		break;
 	}
 
 	case FactoryClass::MILL:
 	{
 		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::MILL, owner);
-		((FactoryClass*)new_fact)->SetSuppler(&n_Farm, &Farm_list);
+		((FactoryClass*)new_fact)->SetSuppler(&n_Farm, &Farm_list, &n_Builders, &Builders_list);
 		break;
 	}
 
 	case FactoryClass::FARM:
 	{
 		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::FARM, owner);
+		((FactoryClass*)new_fact)->SetSuppler(NULL, NULL, &n_Builders, &Builders_list);
 		break;
 	}
 
 	case FactoryClass::MINE:
 	{
 		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::MINE, owner);
+		((FactoryClass*)new_fact)->SetSuppler(NULL, NULL, &n_Builders, &Builders_list);
 		break;
 	}
 
 	case FactoryClass::FORGER:
 	{
 		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::FORGER, owner);
-		((FactoryClass*)new_fact)->SetSuppler(&n_Mine, &Mine_list);
+		((FactoryClass*)new_fact)->SetSuppler(&n_Mine, &Mine_list, &n_Builders, &Builders_list);
 		break;
 	}
 
 	case FactoryClass::WORKSHOP:
 	{
 		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::WORKSHOP, owner);
-		((FactoryClass*)new_fact)->SetSuppler(&n_Forger, &Forger_list);
+		((FactoryClass*)new_fact)->SetSuppler(&n_Forger, &Forger_list, &n_Builders, &Builders_list);
 		break;
 	}
 
 	case FactoryClass::BRICKERY:
 	{
 		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::BRICKERY, owner);
+		((FactoryClass*)new_fact)->SetSuppler(NULL, NULL, &n_Builders, &Builders_list);
 		break;
 	}
 
 	case FactoryClass::BUILDERS:
 	{
 		PlaceUnit(Point2F(), new_fact, 1, OBJTYPES::FACTORY, NULL, FactoryClass::factory_type::BUILDERS, owner);
-		((FactoryClass*)new_fact)->SetSuppler(&n_brickery, &Brickery_list);
+		((FactoryClass*)new_fact)->SetSuppler(&n_brickery, &Brickery_list, &n_Builders, &Builders_list);
 	}
 		break;
 
@@ -1265,13 +1278,25 @@ void SystemClass::Add_Factory_to_sublist(FactoryClass * input)
 		n_elements = *add_element;
 		list = &Brickery_list;
 	}
-	else if (Type == FactoryClass::BUILDERS)
+	
+	FactoryClass** Buffor = 0;
+	if (Type == FactoryClass::BUILDERS)
 	{
+		ServiceClass** subBuffor;
+		ServiceClass*** subList;
+
 		add_element = &n_Builders;
 		n_elements = *add_element;
-		list = &Builders_list;
+		subList = &Builders_list;
+		list = (FactoryClass***)subList;
+		subBuffor = new ServiceClass*[n_elements + 1];
+		Buffor = (FactoryClass**)subBuffor;
 	}
-	FactoryClass** Buffor = new FactoryClass*[n_elements + 1];
+	else
+	{
+		Buffor = new FactoryClass*[n_elements + 1];
+	}
+	
 
 	for (int i = 0; i < n_elements; i++)
 	{
@@ -1333,14 +1358,25 @@ void SystemClass::Remove_Factory_from_sublist(FactoryClass * input)
 		n_elements = *add_element;
 		list = &Brickery_list;
 	}
-	else if (Type == FactoryClass::BUILDERS)
-	{
-		add_element = &n_Builders;
-		n_elements = *add_element;
-		list = &Builders_list;
-	}
 
 	FactoryClass** buffor = 0;
+	if (Type == FactoryClass::BUILDERS)
+	{
+		ServiceClass** subBuffor;
+		ServiceClass*** subList;
+
+		add_element = &n_Builders;
+		n_elements = *add_element;
+		subList = &Builders_list;
+		list = (FactoryClass***)subList;
+		subBuffor = new ServiceClass*[n_elements + 1];
+		buffor = (FactoryClass**)subBuffor;
+	}
+	else
+	{
+		buffor = new FactoryClass*[n_elements + 1];
+	}
+
 	int j = 0;
 	if (n_elements > 1)
 	{
@@ -1556,7 +1592,7 @@ void SystemClass::UpdateCity(int timer)
 		Employee_list[i]->Update(timer);
 
 	for (int i = 0; i < City.get_n_of_factores(); i++)
-		City.GetFactory(i)->Update(timer);
+		City.GetFactory(i)->Update(timer, &pathsys);
 }
 
 void SystemClass::EndOfMonth()
@@ -1571,7 +1607,7 @@ void SystemClass::EndOfMonth()
 		Employee_list[i]->EndOfMonth();
 
 	for (int i = 0; i < City.get_n_of_factores(); i++)
-		City.GetFactory(i)->EndOfMonth(smallest_fee);
+		City.GetFactory(i)->EndOfMonth(smallest_fee, &pathsys);
 
 	for (int i = 0; i < n_Family; i++)
 		m_Family[i]->End_of_month();

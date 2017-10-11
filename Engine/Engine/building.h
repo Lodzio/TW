@@ -2,6 +2,8 @@
 #define  _BUILDINGCLASS_H_
 #include "object.h"
 
+struct InvObject;
+
 class Building : public Object
 {
 protected:
@@ -9,7 +11,7 @@ protected:
 	int act_supplies;
 	int supplies_in_way;
 public:
-	int build(int amm_of_supplies);
+	virtual int build(InvObject* supplies);
 	Building();
 	void Changecarring(int i);
 	int How_many_supplies_needed();

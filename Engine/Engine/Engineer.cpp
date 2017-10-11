@@ -34,7 +34,7 @@ void EngineerClass::CalcPosition(int timeDiff)
 			}
 			else if (Engineer_status == GOING_TO_BUILD)
 			{
-				((Building*)Mode.OBJTarget)->build((*supply)->ammount());
+				((Building*)Mode.OBJTarget)->build(*supply);
 				delete *supply;
 				*supply = 0;
 				if (((Building*)Mode.OBJTarget)->How_many_supplies_needed())

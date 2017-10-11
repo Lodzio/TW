@@ -123,7 +123,7 @@ private:
 
 	int n_Workshop;
 
-	FactoryClass** Builders_list;
+	ServiceClass** Builders_list;
 	int n_Builders;
 
 	FactoryClass** Brickery_list;

@@ -1,5 +1,6 @@
 #include "building.h"
 #include "unit.h"
+#include "InventoryObjects.h"
 
 void Building::Collide(Object * input)
 {
@@ -51,22 +52,27 @@ void Building::Collide(Object * input)
 	}
 }
 
-int Building::build(int amm_of_supplies)
+int Building::build(InvObject* supplies)
 {
+	int amm_of_supplies = supplies->ammount();
+	int delta;
 	Changecarring(-amm_of_supplies);
 	int neededsup = req_supplies - act_supplies;
 	if (amm_of_supplies > neededsup)
 	{
 		act_supplies = req_supplies;
 		Health = MaxHealth;
+		delta = -neededsup;
 		amm_of_supplies -= neededsup;
 	}
 	else
 	{
 		act_supplies += amm_of_supplies;
 		Health = ((float)act_supplies / req_supplies) * MaxHealth;
+		delta = -amm_of_supplies;
 		amm_of_supplies = 0;
 	}
+	supplies->change_ammount(delta);
 	return amm_of_supplies;
 }
 

@@ -18,7 +18,7 @@ void PFindingclass::AddGeom(geometries input)
 
 void PFindingclass::DeleteGeom(int index)
 {
-	geometries* subarray;
+	geometries* subarray = 0;
 	if (n_geom - 1)
 		subarray = new geometries[n_geom - 1];
 	int j = 0;
@@ -106,9 +106,11 @@ bool PFindingclass::chceckcollision(D2D1_POINT_2F first, D2D1_POINT_2F second)
 
 void PFindingclass::deletevertex(int geomindex, int vexindex)
 {
-	D2D1_POINT_2F* vertexes;
+	D2D1_POINT_2F* vertexes;            
 	if (geom[geomindex].n_vex - 1)
 		vertexes = new D2D1_POINT_2F[geom[geomindex].n_vex - 1];
+	else
+		DeleteGeom(geomindex);
 
 	int j = 0;
 	for (int i = 0; i < geom[geomindex].n_vex; i++)

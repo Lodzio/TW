@@ -31,6 +31,9 @@ int UnitClass::Give_Products(InvObject * obj, int amm)
 			}
 		}
 	}
+
+	//Chceck_weight();
+
 	return possible_ammount;
 }
 
@@ -231,5 +234,36 @@ int UnitClass::GiveEquipment(InvObject * in, int amm)
 			output = in->transfer_to(Inventory[i], output);
 			return output;
 		}
+	Chceck_weight();
 	return -1;
+}
+
+InvObject * UnitClass::GetInvObject(UINT type)
+{
+	InvObject* output = 0;
+	for (int i = 0; i < 256; i++)
+	{
+		if (Inventory[i])
+		{
+			if (Inventory[i]->type() == type)
+			{
+				output = Inventory[i];
+				return output;
+			}
+		}
+	}
+	return output;
+}
+
+void UnitClass::Chceck_weight()
+{
+	double new_weight;
+	for (int i = 0; i < 256; i++)
+	{
+		if (Inventory[i])
+		{
+			new_weight += Inventory[i]->weight();
+		}
+	}
+	AccWeight = new_weight;
 }

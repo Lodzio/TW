@@ -11,15 +11,10 @@ class EmployeeClass : public UnitClass
 {
 private:
 
-	enum
-	{
-		IDLE = 0,
-		GO_FOR_PORODUCTS = 1
-	};
-
 	UINT employee_mode;
 	bool is_in_factory;
 	D2D1_POINT_2F point_to_comeback;
+	FactoryClass* target_to_go;
 
 	Wallet wallet;
 	FactoryClass* Employed;
@@ -45,6 +40,14 @@ private:
 	void add_borrower(EmployeeClass* input);
 	void Update_borrowers();
 public:
+
+	enum Employee_target
+	{
+		IDLE = 0,
+		GO_FOR_PORODUCTS = 1,
+		BUILD = 2
+	};
+
 	void CalcPosition(int timeDiff);
 	bool IsInDebt();
 	~EmployeeClass();
@@ -67,7 +70,7 @@ public:
 	void Dead();
 	void RemoveFromFamily();
 	int MonthsWithoutJob();
-	void GoToFactory(FactoryClass* Fac);
+	void GoToFactory(FactoryClass* Fac, UINT target);
 	bool isinfactory();
 	void ComeBackToFactory();
 };

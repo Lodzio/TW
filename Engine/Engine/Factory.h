@@ -6,10 +6,15 @@
 class EmployeeClass;
 class Cityclass;
 class PFindingclass;
+class ServiceClass;
 
 class FactoryClass : public Building
 {
 protected:
+	bool upgrading;
+	int level;
+	int max_workers_per_level;
+	void increase_level();
 	InvObject* Output_object;
 	InvObject* Input_object;
 	UINT FactoryType;
@@ -19,6 +24,9 @@ protected:
 	float Price;
 	FactoryClass*** Suppliers;
 	int* amm_Suppliers;
+	ServiceClass*** Builders;
+	int* amm_Builders;
+
 	EmployeeClass* Owner;
 	int SoldProd, ProducedProd;
 	int OldSoldProd, OldProducedProd;
@@ -44,7 +52,7 @@ public:
 	double SellProducts(int ammount, InvObject* stack);
 	void Init_factory(UINT outObj, UINT inObj, int proddelay, EmployeeClass* own, UINT typ_fact, float salary, Cityclass* city, D2D1_POINT_2L index = Point2L());
 	virtual void Update(int input, PFindingclass* pathmaker);
-	virtual void EndOfMonth(float smallest_sallary);
+	virtual void EndOfMonth(float smallest_sallary, PFindingclass* pathmaker);
 	UINT GetOutputProductsinfo();
 	UINT GetInputProductsinfo();
 	UINT GetFactoryType();
@@ -60,11 +68,12 @@ public:
 	D2D1_POINT_2L Index;
 	void AddEmployee(EmployeeClass* input);
 	void FireEmployee(EmployeeClass* input = NULL);
-	void SetSuppler(int* num_of_supplayers, FactoryClass*** suppliers);
+	void SetSuppler(int* num_of_supplayers, FactoryClass*** suppliers, int* num_of_builders, ServiceClass*** builders);
 	void SetParameters(float margin, float salary);
 	void SetEnter(Cityclass* city);
 	void SetAmmountOfInputProd(int x);
 	D2D1_POINT_2F GetEnter();
+	int build(InvObject* supplies);
 	void ServeEmployee(EmployeeClass* emp);
 
 	enum factory_type
