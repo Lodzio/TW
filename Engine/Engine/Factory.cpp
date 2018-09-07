@@ -176,9 +176,9 @@ void FactoryClass::Update(int input, PFindingclass* pathmaker)
 			if (!ammount)
 				continue;
 			float supp_price = (*Suppliers)[i]->GetPriceOfProducts();
-			pathstruct* path = pathmaker->RequestPath(Enter, (*Suppliers)[i]->GetEnter());
-			double path_lenght = path->GetRange();
-			delete path;
+			//pathstruct* path = pathmaker->RequestPath(Enter, (*Suppliers)[i]->GetEnter());
+			double path_lenght = 100;// path->GetRange();
+			//delete path;
 			supp_price += (2 * (path_lenght / 200) * Salary) / ammount;
 			cost_of_single_raw_material = supp_price;
 
@@ -202,7 +202,7 @@ void FactoryClass::Update(int input, PFindingclass* pathmaker)
 			{
 				if (Workers[j]->isinfactory())
 				{
-					Workers[j]->GoToFactory((*Suppliers)[index], EmployeeClass::GO_FOR_PORODUCTS);
+					//Workers[j]->GoToFactory((*Suppliers)[index], EmployeeClass::GO_FOR_PORODUCTS);
 				}
 			}
 		}
@@ -383,6 +383,14 @@ float FactoryClass::GetPriceOfProducts()
 
 float FactoryClass::GetMargin()
 {
+	if (Input_object) {
+		if (Input_object->ammount() <= 2) {
+			return 0;
+		}
+		else {
+			return Margin;
+		}
+}
 	return Margin;
 }
 

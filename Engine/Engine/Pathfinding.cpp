@@ -121,7 +121,10 @@ void PFindingclass::deletevertex(int geomindex, int vexindex)
 		j++;
 	}
 	delete[] geom[geomindex].vex;
-	geom[geomindex].vex = vertexes;
+	if (geom[geomindex].n_vex - 1)
+		geom[geomindex].vex = vertexes;
+	else
+		geom[geomindex].vex = NULL;
 	geom[geomindex].n_vex--;
 }
 
@@ -375,7 +378,7 @@ void PFindingclass::checkvertexesingeom()
 					if (chcecking[j].x == chcecking[k].x && chcecking[j].y == chcecking[k].y)
 					{
 						deletevertex(i, k);
-						deletevertex(i, j);
+						//deletevertex(i, j);
 						geom[i].changed = true;
 						recheck = true;
 						goto reneval;
@@ -428,11 +431,11 @@ void PFindingclass::createmesh()
 
 void PFindingclass::chceckgeom()
 {
-	connectgeom();
+	/*connectgeom();
 	checkvertexesingeom();
 	correctionofvertexingeom();
 	createmesh();
-	collect_mesh();
+	collect_mesh();*/
 }
 
 void PFindingclass::collect_mesh()

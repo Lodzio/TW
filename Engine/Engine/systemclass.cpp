@@ -300,7 +300,7 @@ bool SystemClass::Frame()
 	if (daily_timer > 1000)
 	{
 		UpdateCity(1000);
-		daily_timer -= 200;
+		daily_timer -= 100;
 		monthly_timer++;
 		if (monthly_timer == 30)
 		{
@@ -1522,8 +1522,11 @@ void SystemClass::MakeNewWorkplaces()
 		int Rand = rand() % 100;
 		if (Employee_list[i]->MonthsWithoutJob() >= 4 && Rand < 20)
 		{
-			FactoryClass* the_best_fact;
-			float best_margin = 0;
+			FactoryClass* the_best_fact[8];
+			float best_margin[8];
+			for (int j = 0; j < 8; j++) {
+				best_margin[j] = 0;
+			}
 			float low_salary = -1;
 
 			if (!n_Bakery)
@@ -1571,16 +1574,32 @@ void SystemClass::MakeNewWorkplaces()
 			{
 				if (City.GetFactory(j)->GetSalary() < low_salary || low_salary == -1)
 					low_salary = City.GetFactory(j)->GetSalary();
-				if (City.GetFactory(j)->GetMargin() > best_margin)
+				if (City.GetFactory(j)->GetMargin() > best_margin[City.GetFactory(j)->GetFactoryType()] && best_margin[City.GetFactory(j)->GetFactoryType()] != -1)
 				{
-					the_best_fact = City.GetFactory(j);
-					best_margin = City.GetFactory(j)->GetMargin();
+					the_best_fact[City.GetFactory(j)->GetFactoryType()] = City.GetFactory(j);
+					best_margin[City.GetFactory(j)->GetFactoryType()] = City.GetFactory(j)->GetMargin();
 
+				}
+				if (City.GetFactory(j)->GetMargin() == 0) {
+					best_margin[City.GetFactory(j)->GetFactoryType()] = -1;
 				}
 			}
 
-			AddFactory(the_best_fact->GetFactoryType(), Employee_list[i]);
-			City.GetFactory(City.get_n_of_factores() - 1)->SetParameters(best_margin, low_salary);
+			float abs_best_margin = 0;
+			FactoryClass* abs_best_fact = 0;
+
+			for (int j = 0; j < 8; j++)
+			{
+				if (best_margin[j] > abs_best_margin)
+				{
+					abs_best_fact = the_best_fact[j];
+					abs_best_margin = best_margin[j];
+
+				}
+			}
+			if (abs_best_margin != 0)
+			AddFactory(abs_best_fact->GetFactoryType(), Employee_list[i]);
+			City.GetFactory(City.get_n_of_factores() - 1)->SetParameters(abs_best_margin * 0.9, low_salary * 1.1);
 			return;
 		}
 	}

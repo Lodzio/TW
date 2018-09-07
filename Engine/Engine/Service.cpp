@@ -16,9 +16,9 @@ void ServiceClass::Update(int input, PFindingclass* pathmaker)
 			if (!ammount)
 				continue;
 			float supp_price = (*Suppliers)[i]->GetPriceOfProducts();
-			pathstruct* path = pathmaker->RequestPath(Enter, (*Suppliers)[i]->GetEnter());
-			double path_lenght = path->GetRange();
-			delete path;
+			//pathstruct* path = pathmaker->RequestPath(Enter, (*Suppliers)[i]->GetEnter());
+			double path_lenght = 100;//= path->GetRange();
+			//delete path;
 			supp_price += (2 * (path_lenght / 200) * Salary) / ammount;
 			cost_of_single_raw_material = supp_price;
 
@@ -44,9 +44,9 @@ void ServiceClass::Update(int input, PFindingclass* pathmaker)
 					if (!ammount)
 						continue;
 					float supp_price = (*Suppliers)[i]->GetPriceOfProducts();
-					pathstruct* path = pathmaker->RequestPath(Enter, (*Suppliers)[i]->GetEnter());
-					double path_lenght = path->GetRange();
-					delete path;
+					//pathstruct* path = pathmaker->RequestPath(Enter, (*Suppliers)[i]->GetEnter());
+					double path_lenght = 100;//path->GetRange();
+					//delete path;
 					supp_price += (2 * (path_lenght / 200) * Salary) / ammount;
 					cost_of_single_raw_material = supp_price;
 
