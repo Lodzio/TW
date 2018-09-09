@@ -69,10 +69,14 @@ class PFindingclass
 	void createmesh();
 	void chceckgeom();
 	void collect_mesh();
+	void expandGeom(int geomIndex, D2D1_POINT_2F *newBuilding, int lenght);
+	int getGeomIndex(D2D1_POINT_2F *newBuilding, int lenght);
+	void reduceGeom(int geomIndex, D2D1_POINT_2F *newBuilding, int lenght);
 	
 public:
 	PFindingclass();
 	void AddBuilding(Building* input);
+	void RemoveBuilding(Building* input);
 	void DrawGeom(ID2D1RenderTarget* target, ID2D1Brush* brush);
 	pathstruct* RequestPath(D2D1_POINT_2F A, D2D1_POINT_2F B);
 };

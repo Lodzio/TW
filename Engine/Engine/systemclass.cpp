@@ -1316,6 +1316,7 @@ void SystemClass::Remove_Factory_from_sublist(FactoryClass * input)
 	int n_elements;
 	int* add_element;
 	FactoryClass*** list;
+	pathsys.RemoveBuilding((Building*)input);
 	if (Type == FactoryClass::BAKERY)
 	{
 		add_element = &n_Bakery;

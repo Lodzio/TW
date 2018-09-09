@@ -154,14 +154,14 @@ void PFindingclass::connectgeom()
 			{
 				if (i >= j)
 					continue;
-				for (int k = 0; k < geom[i].n_vex; k++)
+				geometries First_to_connect = geom[i];
+				geometries Second_to_connect = geom[j];
+				for (int k = 0; k < First_to_connect.n_vex; k++)
 				{
-					for (int l = 0; l < geom[j].n_vex; l++)
+					for (int l = 0; l < Second_to_connect.n_vex; l++)
 					{
-						if (geom[i].vex[k].x == geom[j].vex[l].x && geom[i].vex[k].y == geom[j].vex[l].y)
+						if (First_to_connect.vex[k].x == Second_to_connect.vex[l].x && First_to_connect.vex[k].y == Second_to_connect.vex[l].y)
 						{
-							geometries First_to_connect = geom[i];
-							geometries Second_to_connect = geom[j];
 							New_geometries.n_vex = First_to_connect.n_vex + Second_to_connect.n_vex;
 							New_geometries.vex = new D2D1_POINT_2F[New_geometries.n_vex];
 							int m = 0;
@@ -192,109 +192,87 @@ void PFindingclass::connectgeom()
 	} while (Recheck);
 }
 
-bool NEXTVERTEX(D2D1_POINT_2F* arr, int n, int x1, int &x2)
+int NEXTVERTEX(D2D1_POINT_2F* arr, int length, int x)
 {
-	int subrange = 10000;
-	if (x1 == 0)
-	{
-		for (int i = 1; i < n; i++)
-		{
-			if (arr[i].y < arr[x1].y)
-			{
-				x2 = -1;
-				return false;
+	float closest_range = -1;
+	int closest_index = -1;
+	if (x + 1 == length)
+		return 0;
+	for (int i = x + 1; i < length; i++) {
+		if (arr[i].x == arr[x].x && arr[i].y < arr[x].y) {
+			if (closest_range == -1) {
+				closest_range = arr[x].y - arr[i].y;
+				closest_index = i;
 			}
-			else if (arr[i].y == arr[x1].y)
-			{
-				if (arr[i].x < arr[x1].x)
-				{
-					x2 = -1;
-					return false;
-				}
-				if (arr[i].x - arr[x1].x < subrange)
-				{
-					subrange = arr[i].x - arr[x1].x;
-					x2 = i;
-				}
+			else if (closest_range > arr[x].y - arr[i].y) {
+				closest_range = arr[x].y - arr[i].y;
+				closest_index = i;
 			}
 		}
 	}
-	else
-	{
-		D2D1_POINT_2F* copy = new D2D1_POINT_2F[n];
-		D2D1_POINT_2F memory;
-		int firstvex = -1;
-		int current_index;
-		bool* unchceck = new bool[n];
-		for (int i = 0; i < n; i++)
-			unchceck[i] = true;
-		for (int i = 0; i < n; i++)
-			copy[i] = arr[i];
+	if (closest_range != -1)
+		return closest_index;
 
-		for (int i = 1; i < n; i++)
-		{
-			if (NEXTVERTEX(copy, n, 0, x2))
-				if (x2 != -1)
-				{
-					firstvex = i - 1;
-					break;
-				}
-
-			memory = copy[i];
-			copy[i] = copy[0];
-			copy[0] = memory;
-		}
-		delete[] copy;
-
-		if (firstvex == -1)
-			return false;
-		current_index = firstvex;
-		unchceck[current_index] = false;
-		for (int i = 0; i < n; i++)
-		{
-			if (i != current_index && arr[i].y == arr[current_index].y && arr[i].x - arr[current_index].x < subrange)
-			{
-				subrange = arr[i].x - arr[current_index].x;
-				x2 = i;
+	for (int i = x + 1; i < length; i++) {
+		if (arr[i].y == arr[x].y && arr[i].x > arr[x].x) {
+			if (closest_range == -1) {
+				closest_range = arr[i].x - arr[x].x;
+				closest_index = i;
+			}
+			else if (closest_range > arr[i].x - arr[x].x) {
+				closest_range = arr[i].x - arr[x].x;
+				closest_index = i;
 			}
 		}
-
-
-		do
-		{
-			subrange = 10000;
-			current_index = x2;
-			unchceck[current_index] = false;
-			for (int i = 0; i < n; i++)
-			{
-				if (!unchceck[i])
-					continue;
-
-				if (arr[i].y == arr[current_index].y)
-				{
-					int range = arr[i].x - arr[current_index].x;
-					range = abs(range);
-					if (range < subrange)
-					{
-						subrange = range;
-						x2 = i;
-					}
-				}
-
-				if (arr[i].x == arr[current_index].x)
-				{
-					int range = arr[i].y - arr[current_index].y;
-					range = abs(range);
-					if (range < subrange)
-					{
-						subrange = range;
-						x2 = i;
-					}
-				}
-			}
-		} while (x2 != firstvex && current_index != x1);
 	}
-	return true;
+
+	for (int i = x + 1; i < length; i++) {
+		if (arr[i].x == arr[x].x && arr[i].y > arr[x].y) {
+			if (closest_range == -1) {
+				closest_range = arr[i].y - arr[x].y;
+				closest_index = i;
+			}
+			else if (closest_range > arr[i].y - arr[x].y) {
+				closest_range = arr[i].y - arr[x].y;
+				closest_index = i;
+			}
+		}
+	}
+	if (closest_range != -1)
+		return closest_index;
+
+	for (int i = x + 1; i < length; i++) {
+		if (arr[i].y == arr[x].y && arr[i].x < arr[x].x) {
+			if (closest_range == -1) {
+				closest_range = arr[x].x - arr[i].x;
+				closest_index = i;
+			}
+			else if (closest_range > arr[x].x - arr[i].x) {
+				closest_range = arr[x].x - arr[i].x;
+				closest_index = i;
+			}
+		}
+	}
+
+	return closest_index;
+}
+
+int FINDFIRSTVERTEX(D2D1_POINT_2F* arr, int n) {
+	D2D1_POINT_2F FIRST = arr[0];
+	int index = 0;
+	for (int i = 0; i < n; i++) {
+		if (arr[i].x < FIRST.x) {
+			FIRST = arr[i];
+			index = i;
+		}
+		else if (arr[i].x == FIRST.x) {
+			if (arr[i].y < FIRST.y) {
+				FIRST = arr[i];
+				index = i;
+			}
+		}
+	}
+	return index;
 }
 
 void PFindingclass::correctionofvertexingeom()
@@ -303,58 +281,21 @@ void PFindingclass::correctionofvertexingeom()
 	{
 		bool to_correct = false;
 		D2D1_POINT_2F* ArrayToChceck = geom[i].vex;
+		D2D1_POINT_2F buffor;
 		const int n_Array = geom[i].n_vex;
-		int next;
+		int first = FINDFIRSTVERTEX(geom[i].vex, geom[i].n_vex);
+		
+		buffor = geom[i].vex[0];
+		geom[i].vex[0] = geom[i].vex[first];
+		geom[i].vex[first] = buffor;
 
-		for (int j = 0; j < n_Array; j++)
-		{
-			if (!NEXTVERTEX(ArrayToChceck, n_Array, 0, next))
-			{
-				to_correct = true;
-				break;
-			}
-
-			if (next != j + 1 && next != 0)
-			{
-				to_correct = true;
-				break;
-			}
-		}
-
-		if (to_correct)
-		{
-			geom[i].changed = true;
-			D2D1_POINT_2F* copy = new D2D1_POINT_2F[n_Array];
-			for (int j = 0; j < n_Array; j++)
-				copy[j] = ArrayToChceck[j];
-
-			for (int j = 0; j < n_Array; j++)
-			{
-				D2D1_POINT_2F memory;
-				memory = copy[j];
-				copy[j] = copy[0];
-				copy[0] = memory;
-				if (!NEXTVERTEX(copy, n_Array, 0, next))
-					continue;
-				if (next != -1)
-				{
-					break;
-				}
-			}
-
-			for (int j = 0; j < n_Array - 1; j++)
-			{
-				if (!NEXTVERTEX(copy, n_Array, j, next))
-					break;
-				if (j + 1 == next)
-					continue;
-				D2D1_POINT_2F memory;
-				memory = copy[j + 1];
-				copy[j + 1] = copy[next];
-				copy[next] = memory;
-			}
-			delete[] ArrayToChceck;
-			geom[i].vex = copy;
+		for (int j = 0; j < geom[i].n_vex - 1; j++) {
+			int next = NEXTVERTEX(geom[i].vex, geom[i].n_vex, j);
+			if (next == -1)
+				continue;
+			buffor = geom[i].vex[j + 1];
+			geom[i].vex[j + 1] = geom[i].vex[next];
+			geom[i].vex[next] = buffor;
 		}
 	}
 }
@@ -378,7 +319,6 @@ void PFindingclass::checkvertexesingeom()
 					if (chcecking[j].x == chcecking[k].x && chcecking[j].y == chcecking[k].y)
 					{
 						deletevertex(i, k);
-						//deletevertex(i, j);
 						geom[i].changed = true;
 						recheck = true;
 						goto reneval;
@@ -429,12 +369,161 @@ void PFindingclass::createmesh()
 	}
 }
 
+void PFindingclass::expandGeom(int geomIndex, D2D1_POINT_2F *newBuilding, int lenght) {
+
+	geometries Geometry = geom[geomIndex];
+
+	int TouchedGeometryVertex[2];
+	int TouchedBuildingVertex[2];
+	int numOfTouchedVertexes = 0;
+	int in_case_0index_in_center_building = 0;
+	int in_case_0index_in_center_geometry = 0;
+	for (int i = 0; i < Geometry.n_vex; i++) {
+		for (int j = 0; j < lenght; j++) {
+			if (Geometry.vex[i].x == newBuilding[j].x && Geometry.vex[i].y == newBuilding[j].y) {
+				if (numOfTouchedVertexes > 0) {
+					if (i == 1) {
+						in_case_0index_in_center_building = j;
+						in_case_0index_in_center_geometry = i;
+					}
+					else if (i == Geometry.n_vex - 1 && in_case_0index_in_center_building != 0) {
+						TouchedGeometryVertex[0] = in_case_0index_in_center_geometry;
+						TouchedBuildingVertex[0] = in_case_0index_in_center_building;
+					}
+
+					TouchedGeometryVertex[1] = i;
+					TouchedBuildingVertex[1] = j;
+				}
+				else {
+					TouchedGeometryVertex[0] = i;
+					TouchedBuildingVertex[0] = j;
+				}		
+				numOfTouchedVertexes++;
+			}
+		}
+	}
+
+	if (TouchedGeometryVertex[1] == Geometry.n_vex - 1 && TouchedGeometryVertex[0] == 0) {
+		TouchedGeometryVertex[0] = TouchedGeometryVertex[1];
+		TouchedGeometryVertex[1] = 0;
+
+		int buffor = TouchedBuildingVertex[0];
+		TouchedBuildingVertex[0] = TouchedBuildingVertex[1];
+		TouchedBuildingVertex[1] = buffor;
+	}
+
+
+	geometries New_geometries;
+	int fixedSecondVertex = TouchedBuildingVertex[1];
+	if (fixedSecondVertex < TouchedBuildingVertex[0])
+		fixedSecondVertex += 4;
+	New_geometries.n_vex = Geometry.n_vex + lenght - (2 + ((numOfTouchedVertexes - 2) * 2));// (TouchedGeometryVertex[1] - TouchedGeometryVertex[0]) + (fixedSecondVertex - TouchedBuildingVertex[0]);
+
+	New_geometries.vex = new D2D1_POINT_2F[New_geometries.n_vex];
+	int index = 0;
+	for (int i = 0; i < TouchedGeometryVertex[0]; i++) {
+		New_geometries.vex[index] = Geometry.vex[i];
+		index++;
+	}
+
+	for (int i = TouchedBuildingVertex[0]; i != TouchedBuildingVertex[1]; i++) {
+		if (i == 4)
+ 			i -= 4;
+		if (i == TouchedBuildingVertex[1])
+			break;
+		New_geometries.vex[index] = newBuilding[i];
+		index++;
+	}
+	if (index > New_geometries.n_vex)
+		Sleep(1);
+
+	for (int i = TouchedGeometryVertex[1]; i < Geometry.n_vex; i++) {
+		if (TouchedGeometryVertex[1] == 0)
+			break;
+		New_geometries.vex[index] = Geometry.vex[i];
+		index++;
+	}
+
+	if (index > New_geometries.n_vex)
+		Sleep(1);
+	DeleteGeom(geomIndex);
+	AddGeom(New_geometries);
+}
+
+void PFindingclass::reduceGeom(int geomIndex, D2D1_POINT_2F *newBuilding, int lenght) {
+	geometries Geometry = geom[geomIndex];
+
+	int TouchedGeometryVertex[2];
+	int TouchedBuildingVertex[2];
+	int numOfTouchedVertexes = 0;
+	if (Geometry.n_vex == 4)
+		DeleteGeom(geomIndex);
+
+	for (int i = 0; i < Geometry.n_vex; i++) {
+		for (int j = 0; j < lenght; j++) {
+			if (Geometry.vex[i].x == newBuilding[j].x && Geometry.vex[i].y == newBuilding[j].y) {
+				if (numOfTouchedVertexes > 0) {
+					TouchedGeometryVertex[1] = i;
+					TouchedBuildingVertex[1] = j;
+				}
+				else {
+					TouchedGeometryVertex[0] = i;
+					TouchedBuildingVertex[0] = j;
+				}
+				numOfTouchedVertexes++;
+			}
+		}
+	}
+
+	geometries New_geometries;
+	int fixedSecondVertex = TouchedBuildingVertex[1];
+	if (fixedSecondVertex < TouchedBuildingVertex[0])
+		fixedSecondVertex += 4;
+	New_geometries.n_vex = Geometry.n_vex - ((numOfTouchedVertexes - 3) * 2);// (TouchedGeometryVertex[1] - TouchedGeometryVertex[0]) + (fixedSecondVertex - TouchedBuildingVertex[0]);
+
+	New_geometries.vex = new D2D1_POINT_2F[New_geometries.n_vex];
+	int index = 0;
+	for (int i = 0; i <= TouchedGeometryVertex[0]; i++) {
+		New_geometries.vex[index] = Geometry.vex[i];
+		index++;
+	}
+
+	if (index > New_geometries.n_vex)
+		Sleep(1);
+
+	for (int i = TouchedGeometryVertex[1]; i < Geometry.n_vex; i++) {
+		if (TouchedGeometryVertex[1] == 0)
+			break;
+		New_geometries.vex[index] = Geometry.vex[i];
+		index++;
+	}
+
+	if (index > New_geometries.n_vex)
+		Sleep(1);
+	DeleteGeom(geomIndex);
+	AddGeom(New_geometries);
+}
+
+int PFindingclass::getGeomIndex(D2D1_POINT_2F *newBuilding, int lenght) {
+	for (int i = 0; i < n_geom; i++) {
+		D2D1_POINT_2F* vertexes = geom[i].vex;
+		for (int j = 0; j < lenght; j++) {
+			for (int k = 0; k < geom[i].n_vex; k++) {
+				if (newBuilding[j].x == vertexes[k].x && newBuilding[j].y == vertexes[k].y)
+					return i;
+			}
+		}
+	}
+	return -1;
+}
+
 void PFindingclass::chceckgeom()
 {
-	/*connectgeom();
-	checkvertexesingeom();
-	correctionofvertexingeom();
-	createmesh();
+	//connectgeom();
+	//checkvertexesingeom();
+	//clearVertexes();
+	//correctionofvertexingeom();
+	/*createmesh();
 	collect_mesh();*/
 }
 
@@ -468,15 +557,37 @@ PFindingclass::PFindingclass()
 void PFindingclass::AddBuilding(Building * input)
 {
 	D2D1_POINT_2F* array = new D2D1_POINT_2F[4];
-	geometries new_geom;
 	array[0] = Point2F(input->GetStartCorner().x, input->GetStartCorner().y);
 	array[1] = Point2F(input->GetStartCorner().x + input->GetSize().width, input->GetStartCorner().y);
-	array[2] = Point2F(input->GetStartCorner().x, input->GetStartCorner().y + input->GetSize().height);
-	array[3] = Point2F(input->GetStartCorner().x + input->GetSize().width, input->GetStartCorner().y + input->GetSize().height);
-	new_geom.vex = array;
-	new_geom.n_vex = 4;
-	AddGeom(new_geom);
-	chceckgeom();
+	array[3] = Point2F(input->GetStartCorner().x, input->GetStartCorner().y + input->GetSize().height);
+	array[2] = Point2F(input->GetStartCorner().x + input->GetSize().width, input->GetStartCorner().y + input->GetSize().height);
+
+	int geometryIndex = getGeomIndex(array, 4);
+	if (geometryIndex == -1) {
+		geometries new_geom;
+		new_geom.vex = array;
+		new_geom.n_vex = 4;
+		AddGeom(new_geom);
+		chceckgeom();
+	}
+	else {
+		expandGeom(geometryIndex, array, 4);
+	}
+}
+
+void PFindingclass::RemoveBuilding(Building * input) {
+	D2D1_POINT_2F* array = new D2D1_POINT_2F[4];
+	array[0] = Point2F(input->GetStartCorner().x, input->GetStartCorner().y);
+	array[1] = Point2F(input->GetStartCorner().x + input->GetSize().width, input->GetStartCorner().y);
+	array[3] = Point2F(input->GetStartCorner().x, input->GetStartCorner().y + input->GetSize().height);
+	array[2] = Point2F(input->GetStartCorner().x + input->GetSize().width, input->GetStartCorner().y + input->GetSize().height);
+
+	int geometryIndex = getGeomIndex(array, 4);
+	if (geometryIndex == -1)
+		Sleep(1);
+	else {
+		reduceGeom(geometryIndex, array, 4);
+	}
 }
 
 void PFindingclass::DrawGeom(ID2D1RenderTarget * target, ID2D1Brush * brush)
